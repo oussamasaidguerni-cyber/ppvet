@@ -91,6 +91,28 @@ export default function Appointments() {
     }
   }
 
+  const cancelAppointment = async (id: number) => {
+    if (confirm('Cancel this appointment?')) {
+      try {
+        await api.updateAppointment(id, { status: 'cancelled' })
+        loadData()
+      } catch (error: any) {
+        alert(error.message)
+      }
+    }
+  }
+
+  const deleteAppointment = async (id: number) => {
+    if (confirm('Delete this appointment permanently?')) {
+      try {
+        await api.deleteAppointment(id)
+        loadData()
+      } catch (error: any) {
+        alert(error.message)
+      }
+    }
+  }
+
   if (loading) return <div>Loading...</div>
 
   return (
@@ -182,16 +204,21 @@ export default function Appointments() {
                     <>
                       <button onClick={() => updateStatus(appt.id, 'confirmed')} className="text-sm text-black underline">Confirm</button>
                       <Link to={`/medical/start-visit?appointment_id=${appt.id}&client_id=${appt.client_id}&animal_id=${appt.animal_id}&reason=${encodeURIComponent(appt.reason)}`} className="text-sm text-black underline">Start Visit</Link>
-                      <button onClick={() => updateStatus(appt.id, 'cancelled')} className="text-sm text-black underline">Cancel</button>
+                      <button onClick={() => cancelAppointment(appt.id)} className="text-sm text-red-600 underline">Cancel</button>
                     </>
                   )}
                   {appt.status === 'confirmed' && (
                     <>
                       <Link to={`/medical/start-visit?appointment_id=${appt.id}&client_id=${appt.client_id}&animal_id=${appt.animal_id}&reason=${encodeURIComponent(appt.reason)}`} className="text-sm text-black underline">Start Visit</Link>
-                      <button onClick={() => updateStatus(appt.id, 'cancelled')} className="text-sm text-black underline">Cancel</button>
+                      <button onClick={() => cancelAppointment(appt.id)} className="text-sm text-red-600 underline">Cancel</button>
                     </>
                   )}
-                  <button onClick={() => startEdit(appt)} className="text-sm text-black underline flex items-center gap-1"><Edit className="h-3 w-3" />Edit</button>
+                  {appt.status === 'cancelled' && (
+                    <button onClick={() => deleteAppointment(appt.id)} className="text-sm text-red-600 underline">Delete</button>
+                  )}
+                  {appt.status !== 'cancelled' && (
+                    <button onClick={() => startEdit(appt)} className="text-sm text-black underline flex items-center gap-1"><Edit className="h-3 w-3" />Edit</button>
+                  )}
                 </td>
               </tr>
             ))}

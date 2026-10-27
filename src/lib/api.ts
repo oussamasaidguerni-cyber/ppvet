@@ -67,6 +67,9 @@ export const api = {
   deleteClient: async (id: number) => {
     await db.clients.update(id, { is_active: 0 });
   },
+  permanentDeleteClient: async (id: number) => {
+    await db.clients.delete(id);
+  },
   getAnimal: async (id: number) => {
     const animal = await db.animals.get(id);
     const client = await db.clients.get(animal!.client_id);
@@ -114,6 +117,9 @@ export const api = {
   updateAppointment: async (id: number, data: any) => {
     await db.appointments.update(id, data);
     return db.appointments.get(id);
+  },
+  deleteAppointment: async (id: number) => {
+    await db.appointments.delete(id);
   },
   createVisit: async (data: any) => {
     const id = await db.visits.add({ ...data, created_at: new Date().toISOString() });

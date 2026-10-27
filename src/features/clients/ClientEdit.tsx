@@ -71,6 +71,17 @@ export default function ClientEdit() {
     }
   }
 
+  const handlePermanentDelete = async () => {
+    if (confirm('Permanently delete this client? This cannot be undone.')) {
+      try {
+        await api.permanentDeleteClient(parseInt(id!))
+        navigate('/clients')
+      } catch (err: any) {
+        alert(err.message)
+      }
+    }
+  }
+
   return (
     <div>
       <div className="mb-6">
@@ -112,6 +123,7 @@ export default function ClientEdit() {
           <Button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Save'}</Button>
           <Button type="button" variant="outline" onClick={() => navigate('/clients')}>Cancel</Button>
           <Button type="button" variant="outline" onClick={handleDelete} className="ml-auto">Archive</Button>
+          <Button type="button" variant="outline" onClick={handlePermanentDelete} className="text-red-600">Delete Permanently</Button>
         </div>
       </form>
     </div>
