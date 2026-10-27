@@ -11,8 +11,12 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem('ppvet-theme') as Theme;
-    return stored || 'system';
+    try {
+      const stored = localStorage.getItem('ppvet-theme') as Theme;
+      return stored || 'system';
+    } catch {
+      return 'system';
+    }
   });
 
   useEffect(() => {
