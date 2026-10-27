@@ -23,22 +23,23 @@
   }
 
   .dark {
-    --background: 220 7% 8%;
-    --foreground: 210 20% 96%;
-    --card: 220 7% 12%;
-    --card-foreground: 210 20% 96%;
-    --muted: 220 7% 18%;
-    --muted-foreground: 215 16% 70%;
-    --border: 220 7% 24%;
-    --input: 220 7% 18%;
-    --primary: 210 20% 96%;
-    --primary-foreground: 220 7% 8%;
-    --secondary: 220 7% 18%;
-    --secondary-foreground: 210 20% 96%;
-    --accent: 220 7% 18%;
-    --accent-foreground: 210 20% 96%;
+    --background: 222 14% 10%;
+    --foreground: 210 40% 98%;
+    --card: 222 14% 13%;
+    --card-foreground: 210 40% 98%;
+    --muted: 222 14% 18%;
+    --muted-foreground: 215 20% 75%;
+    --border: 222 14% 26%;
+    --input: 222 14% 18%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 14% 10%;
+    --secondary: 222 14% 18%;
+    --secondary-foreground: 210 40% 98%;
+    --accent: 222 14% 18%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
+    --ring: 215 20% 65%;
   }
 
   * {
@@ -48,4 +49,23 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+}
+
+/* Ensure form controls are theme-aware */
+select, option {
+  color-scheme: light;
+}
+
+.dark select, .dark option {
+  color-scheme: dark;
+}
+
+.dark select {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.dark option {
+  background-color: hsl(var(--card));
+  color: hsl(var(--foreground));
 }

@@ -15,8 +15,10 @@ export default function Billing() {
   const [formData, setFormData] = useState({
     client_id: '',
     items: [{ description: '', quantity: 1, unit_price: 0, product_id: '' }],
-    discount: 0
+    discount: 0 as any
   })
+  const [errors, setErrors] = useState<any>({})
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -39,6 +41,12 @@ export default function Billing() {
     setFormData({...formData, items: [...formData.items, { description: '', quantity: 1, unit_price: 0, product_id: '' }]})
   }
 
+  const removeItem = (index: number) => {
+    if (formData.items.length === 1) return
+    const items = formData.items.filter((_, i) => i !== index)
+    setFormData({...formData, items})
+  }
+
   const updateItem = (index: number, field: string, value: any) => {
     const items = [...formData.items]
     items[index] = { ...items[index], [field]: value }
@@ -50,26 +58,69 @@ export default function Billing() {
       }
     }
     setFormData({...formData, items})
+    setErrors({})
+  }
+
+  const calculateSubtotal = () => {
+    return formData.items.reduce((sum, item) => sum + (Number(item.quantity || 0) * Number(item.unit_price || 0)), 0)
   }
 
   const calculateTotal = () => {
-    const subtotal = formData.items.reduce((sum, item) => sum + (Number(item.quantity) * Number(item.unit_price)), 0)
-    return subtotal - Number(formData.discount || 0)
+    const subtotal = calculateSubtotal()
+    const discount = Math.max(0, Number(formData.discount || 0))
+    const total = subtotal - discount
+    return total < 0 ? 0 : total
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const newErrors: any = {}
+    
+    if (!formData.client_id) {
+      newErrors.client_id = 'Client is required'
+    }
+    
+    formData.items.forEach((item, idx) => {
+      if (!item.description?.trim()) {
+        newErrors[`item_${idx}_description`] = 'Description required'
+      }
+      if (Number(item.quantity) <= 0) {
+        newErrors[`item_${idx}_quantity`] = 'Quantity must be > 0'
+      }
+      if (Number(item.unit_price) < 0) {
+        newErrors[`item_${idx}_unit_price`] = 'Price must be >= 0'
+      }
+    })
+    
+    if (Number(formData.discount) < 0) {
+      newErrors.discount = 'Discount cannot be negative'
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+    
+    setSubmitting(true)
     try {
       await api.createInvoice({
         client_id: parseInt(formData.client_id),
         items: formData.items.map(i => ({...i, quantity: parseInt(i.quantity as any), unit_price: parseInt(i.unit_price as any), product_id: i.product_id ? parseInt(i.product_id) : null})),
-        discount: parseInt(formData.discount as any || 0)
+        discount: Math.max(0, parseInt(formData.discount as any || 0))
       })
       setShowForm(false)
+      setFormData({
+        client_id: '',
+        items: [{ description: '', quantity: 1, unit_price: 0, product_id: '' }],
+        discount: 0
+      })
+      setErrors({})
       loadData()
-      alert('Invoice created')
+      alert('Invoice created successfully')
     } catch (error: any) {
-      alert(error.message)
+      alert(error.message || 'Failed to create invoice')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -109,86 +160,156 @@ export default function Billing() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="border border-gray-200 p-4 mb-6 space-y-4">
+        <form onSubmit={handleSubmit} className="border border-border bg-card p-6 mb-6 space-y-5">
           <div>
-            <Label>Client</Label>
-            <select className="w-full h-10 border border-border px-3" onChange={(e) => setFormData({...formData, client_id: e.target.value})} required>
-              <option value="">Select...</option>
+            <Label htmlFor="client">Client</Label>
+            <select 
+              id="client"
+              className="w-full h-10 border border-input bg-background text-foreground px-3 focus:outline-none focus:ring-2 focus:ring-ring mt-1" 
+              value={formData.client_id}
+              onChange={(e) => { setFormData({...formData, client_id: e.target.value}); setErrors({...errors, client_id: ''}) }} 
+            >
+              <option value="">Select client...</option>
               {clients.map(c => <option key={c.id} value={c.id}>{c.full_name}</option>)}
             </select>
+            {errors.client_id && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.client_id}</p>}
           </div>
           
           <div>
-            <Label>Items</Label>
-            {formData.items.map((item, idx) => (
-              <div key={idx} className="grid grid-cols-12 gap-2 mb-2">
-                <select className="col-span-3 h-10 border border-border px-2" onChange={(e) => updateItem(idx, 'product_id', e.target.value)}>
-                  <option value="">Custom</option>
-                  {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.selling_price} DZD)</option>)}
-                </select>
-                <Input className="col-span-3" placeholder="Description" value={item.description} onChange={(e) => updateItem(idx, 'description', e.target.value)} required />
-                <Input className="col-span-2" type="number" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(idx, 'quantity', e.target.value)} required />
-                <Input className="col-span-2" type="number" placeholder="Price" value={item.unit_price} onChange={(e) => updateItem(idx, 'unit_price', e.target.value)} required />
-                <div className="col-span-2 flex items-center text-sm">{Number(item.quantity) * Number(item.unit_price)} DZD</div>
+            <div className="flex items-center justify-between mb-2">
+              <Label>Invoice Items</Label>
+              <Button type="button" variant="outline" size="sm" onClick={addItem}>Add Item</Button>
+            </div>
+            <div className="space-y-2">
+              {formData.items.map((item, idx) => (
+                <div key={idx} className="border border-border p-3 space-y-2 md:space-y-0 md:grid md:grid-cols-12 md:gap-2">
+                  <div className="md:col-span-3">
+                    <Label className="text-xs md:hidden">Item/Service</Label>
+                    <select 
+                      className="w-full h-10 border border-input bg-background text-foreground px-2 focus:outline-none focus:ring-2 focus:ring-ring" 
+                      value={item.product_id}
+                      onChange={(e) => updateItem(idx, 'product_id', e.target.value)}
+                    >
+                      <option value="">Custom item</option>
+                      {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.selling_price} DZD)</option>)}
+                    </select>
+                  </div>
+                  <div className="md:col-span-3">
+                    <Label className="text-xs md:hidden">Description</Label>
+                    <Input placeholder="Description" value={item.description} onChange={(e) => updateItem(idx, 'description', e.target.value)} />
+                    {errors[`item_${idx}_description`] && <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors[`item_${idx}_description`]}</p>}
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label className="text-xs md:hidden">Quantity</Label>
+                    <Input type="number" min="1" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(idx, 'quantity', e.target.value)} />
+                    {errors[`item_${idx}_quantity`] && <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors[`item_${idx}_quantity`]}</p>}
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label className="text-xs md:hidden">Unit Price (DZD)</Label>
+                    <Input type="number" min="0" placeholder="Price" value={item.unit_price} onChange={(e) => updateItem(idx, 'unit_price', e.target.value)} />
+                    {errors[`item_${idx}_unit_price`] && <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors[`item_${idx}_unit_price`]}</p>}
+                  </div>
+                  <div className="md:col-span-2 flex items-center justify-between md:justify-start gap-2">
+                    <div className="text-sm text-foreground">{Number(item.quantity || 0) * Number(item.unit_price || 0)} DZD</div>
+                    {formData.items.length > 1 && (
+                      <button type="button" onClick={() => removeItem(idx)} className="text-sm text-red-600 dark:text-red-400 hover:underline">
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <div className="w-full md:w-72 space-y-2 border border-border p-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-foreground">{calculateSubtotal()} DZD</span>
               </div>
-            ))}
-            <Button type="button" variant="outline" size="sm" onClick={addItem}>Add Item</Button>
+              <div className="flex items-center justify-between gap-2">
+                <Label className="text-sm">Discount (DZD)</Label>
+                <Input 
+                  type="number" 
+                  min="0"
+                  className="w-32 h-9"
+                  value={formData.discount}
+                  onChange={(e) => { setFormData({...formData, discount: e.target.value}); setErrors({...errors, discount: ''}) }} 
+                />
+              </div>
+              {errors.discount && <p className="text-xs text-red-600 dark:text-red-400">{errors.discount}</p>}
+              <div className="flex items-center justify-between pt-2 border-t border-border">
+                <span className="font-semibold text-foreground">Total</span>
+                <span className="text-lg font-semibold text-foreground">{calculateTotal()} DZD</span>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 max-w-xs">
-            <div>
-              <Label>Discount (DZD)</Label>
-              <Input type="number" onChange={(e) => setFormData({...formData, discount: parseInt(e.target.value) || 0})} />
-            </div>
-            <div>
-              <Label>Total</Label>
-              <div className="h-10 flex items-center font-semibold">{calculateTotal()} DZD</div>
-            </div>
+          <div className="flex gap-2">
+            <Button type="submit" disabled={submitting}>{submitting ? 'Creating...' : 'Create Invoice'}</Button>
+            <Button type="button" variant="outline" onClick={() => { setShowForm(false); setErrors({}) }}>Cancel</Button>
           </div>
-
-          <Button type="submit">Create Invoice</Button>
         </form>
       )}
 
-      <div className="border border-gray-200">
-        <table className="w-full">
-          <thead className="bg-muted border-b border-gray-200">
-            <tr>
-              <th className="text-left px-4 py-3 text-sm font-medium">Invoice #</th>
-              <th className="text-left px-4 py-3 text-sm font-medium">Client</th>
-              <th className="text-left px-4 py-3 text-sm font-medium">Total</th>
-              <th className="text-left px-4 py-3 text-sm font-medium">Paid</th>
-              <th className="text-left px-4 py-3 text-sm font-medium">Balance</th>
-              <th className="text-left px-4 py-3 text-sm font-medium">Status</th>
-              <th className="text-left px-4 py-3 text-sm font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoices.map((inv) => (
-              <tr key={inv.id} className="border-b border-gray-200 last:border-0">
-                <td className="px-4 py-3 text-sm">{inv.invoice_number}</td>
-                <td className="px-4 py-3">{inv.client_name}</td>
-                <td className="px-4 py-3">{inv.total} DZD</td>
-                <td className="px-4 py-3">{inv.amount_paid} DZD</td>
-                <td className="px-4 py-3">{inv.balance} DZD</td>
-                <td className="px-4 py-3 text-sm capitalize">{inv.status.replace('_', ' ')}</td>
-                <td className="px-4 py-3 flex gap-2 flex-wrap">
-                  {inv.status !== 'paid' && (
-                    <button onClick={() => addPayment(inv.id)} className="text-sm text-black underline">Add Payment</button>
-                  )}
-                  <Link to={`/billing/print/${inv.id}`} target="_blank" className="text-sm text-black underline flex items-center gap-1">
-                    <Printer className="h-3 w-3" /> Print
-                  </Link>
-                  <button onClick={() => deleteInvoice(inv.id)} className="text-sm text-red-600 underline flex items-center gap-1">
-                    <Trash2 className="h-3 w-3" /> Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {invoices.length === 0 && (
-          <div className="p-6 text-center text-muted-foreground">No invoices</div>
+      <div>
+        <h2 className="text-lg font-semibold mb-3">Invoice History</h2>
+        {invoices.length === 0 ? (
+          <div className="border border-border bg-card p-6 text-center">
+            <p className="text-muted-foreground mb-4">No invoices yet.</p>
+            <Button onClick={() => setShowForm(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create First Invoice
+            </Button>
+          </div>
+        ) : (
+          <div className="border border-border bg-card overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-muted/50 border-b border-border">
+                <tr>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-foreground">Invoice #</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-foreground">Client</th>
+                  <th className="text-right px-4 py-3 text-sm font-medium text-foreground">Total</th>
+                  <th className="text-right px-4 py-3 text-sm font-medium text-foreground">Paid</th>
+                  <th className="text-right px-4 py-3 text-sm font-medium text-foreground">Balance</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-foreground">Status</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-foreground">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map((inv) => (
+                  <tr key={inv.id} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
+                    <td className="px-4 py-3 text-sm text-foreground font-medium">{inv.invoice_number}</td>
+                    <td className="px-4 py-3 text-foreground">{inv.client_name}</td>
+                    <td className="px-4 py-3 text-right text-foreground">{inv.total} DZD</td>
+                    <td className="px-4 py-3 text-right text-foreground">{inv.amount_paid} DZD</td>
+                    <td className="px-4 py-3 text-right text-foreground">{inv.balance} DZD</td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        inv.status === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-400' :
+                        inv.status === 'partial' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400' :
+                        'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400'
+                      }`}>
+                        {inv.status.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 flex gap-2 flex-wrap">
+                      {inv.status !== 'paid' && (
+                        <button onClick={() => addPayment(inv.id)} className="text-sm text-foreground hover:underline">Add Payment</button>
+                      )}
+                      <Link to={`/billing/print/${inv.id}`} target="_blank" className="text-sm text-foreground hover:underline flex items-center gap-1">
+                        <Printer className="h-3 w-3" /> Print
+                      </Link>
+                      <button onClick={() => deleteInvoice(inv.id)} className="text-sm text-red-600 dark:text-red-400 hover:underline flex items-center gap-1">
+                        <Trash2 className="h-3 w-3" /> Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

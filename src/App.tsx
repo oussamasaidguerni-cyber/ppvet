@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
+import CommandPalette from './components/CommandPalette'
 import Dashboard from './features/dashboard/Dashboard'
 import ClientsList from './features/clients/ClientsList'
 import ClientForm from './features/clients/ClientForm'
@@ -42,6 +43,7 @@ function App() {
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </AppLayout>
+      <CommandPalette />
     </Router>
   )
 }

@@ -100,10 +100,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main content */}
       <div className="lg:pl-64">
-        <div className="sticky top-0 z-40 flex h-16 items-center gap-x-4 border-b border-border bg-background px-4 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-40 flex h-16 items-center gap-x-4 border-b border-border bg-background/95 backdrop-blur px-4 sm:px-6 lg:px-8">
           <button
             type="button"
-            className="lg:hidden"
+            className="lg:hidden text-foreground"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu className="h-6 w-6" />

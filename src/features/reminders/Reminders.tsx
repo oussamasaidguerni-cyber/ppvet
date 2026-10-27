@@ -62,24 +62,24 @@ export default function Reminders() {
   if (loading) return null
 
   return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold mb-3">Reminders</h2>
+    <div>
+      <h2 className="text-lg font-semibold mb-3">Action Center</h2>
       <div className="space-y-2">
         {reminders.length === 0 ? (
-          <div className="border border-gray-200 p-3 text-sm text-muted-foreground">No reminders</div>
+          <div className="border border-border bg-card p-3 text-sm text-muted-foreground">No pending tasks</div>
         ) : (
           reminders.map((r, idx) => (
-            <Link key={idx} to={r.link} className="block border border-gray-200 p-3 hover:bg-muted">
+            <Link key={idx} to={r.link} className="block border border-border bg-card p-3 hover:bg-accent/50 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-sm">{r.title}</div>
+                  <div className="font-medium text-sm text-foreground">{r.title}</div>
                   <div className="text-sm text-muted-foreground">{r.subtitle}</div>
                 </div>
                 <div className="text-right">
-                  <span className={`text-xs px-2 py-1 ${
-                    r.type === 'overdue' ? 'bg-red-100 text-red-800' :
-                    r.type === 'today' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-gray-100 text-gray-800'
+                  <span className={`text-xs px-2 py-1 rounded ${
+                    r.type === 'overdue' ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400' :
+                    r.type === 'today' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400' :
+                    'bg-muted text-muted-foreground'
                   }`}>{r.type}</span>
                   <div className="text-xs text-muted-foreground mt-1">{r.date}</div>
                 </div>

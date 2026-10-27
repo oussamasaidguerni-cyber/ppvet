@@ -55,7 +55,7 @@ export default function ClientsList() {
 
       <form onSubmit={handleSearch} className="mb-4">
         <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by name or phone..."
             value={searchTerm}
@@ -66,34 +66,36 @@ export default function ClientsList() {
       </form>
 
       {clients.length === 0 ? (
-        <div className="border border-gray-200 p-6 text-center">
-          <p className="text-muted-foreground mb-4">No clients yet.</p>
-          <Link to="/clients/new">
-            <Button>Add First Client</Button>
-          </Link>
+        <div className="border border-border bg-card p-6 text-center">
+          <p className="text-muted-foreground mb-4">{searchTerm ? 'No clients match your search.' : 'No clients yet.'}</p>
+          {!searchTerm && (
+            <Link to="/clients/new">
+              <Button>Register First Patient</Button>
+            </Link>
+          )}
         </div>
       ) : (
-        <div className="border border-gray-200 overflow-x-auto">
+        <div className="border border-border bg-card overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-muted border-b border-gray-200">
+            <thead className="bg-muted/50 border-b border-border">
               <tr>
-                <th className="text-left px-4 py-3 text-sm font-medium">Name</th>
-                <th className="text-left px-4 py-3 text-sm font-medium">Phone</th>
-                <th className="text-left px-4 py-3 text-sm font-medium">Address</th>
-                <th className="text-left px-4 py-3 text-sm font-medium">Actions</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-foreground">Name</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-foreground">Phone</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-foreground">Address</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
               {clients.map((client) => (
-                <tr key={client.id} className="border-b border-gray-200 last:border-0">
-                  <td className="px-4 py-3">{client.full_name}</td>
+                <tr key={client.id} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
+                  <td className="px-4 py-3 text-foreground">{client.full_name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{client.phone || '-'}</td>
                   <td className="px-4 py-3 text-muted-foreground">{client.address || '-'}</td>
-                  <td className="px-4 py-3 flex gap-2">
-                    <Link to={`/clients/${client.id}`} className="text-sm text-black underline">
+                  <td className="px-4 py-3 flex gap-3">
+                    <Link to={`/clients/${client.id}`} className="text-sm text-foreground hover:underline">
                       View
                     </Link>
-                    <Link to={`/clients/edit/${client.id}`} className="text-sm text-black underline flex items-center gap-1">
+                    <Link to={`/clients/edit/${client.id}`} className="text-sm text-foreground hover:underline flex items-center gap-1">
                       <Edit className="h-3 w-3" /> Edit
                     </Link>
                   </td>
