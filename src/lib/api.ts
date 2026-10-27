@@ -15,13 +15,14 @@ export const api = {
     return api.getClinic();
   },
   getDashboardStats: async () => {
-    const clients = await db.clients.where('is_active').equals(1).count();
-    const animals = await db.animals.where('is_active').equals(1).count();
+    const activeClients = await db.clients.where('is_active').equals(1).toArray();
+    const clients = activeClients.length;
+    const activeClientIds = new Set(activeClients.map(c => c.id));
+    const allAnimals = await db.animals.where('is_active').equals(1).toArray();
+    const animals = allAnimals.filter(a => activeClientIds.has(a.client_id)).length;
     const today = new Date().toISOString().split('T')[0];
     const allAppts = await db.appointments.toArray();
-    const activeClients = await db.clients.where('is_active').equals(1).toArray();
-    const activeClientIds = new Set(activeClients.map(c => c.id));
-    const activeAnimals = await db.animals.where('is_active').equals(1).toArray();
+    const activeAnimals = allAnimals.filter(a => activeClientIds.has(a.client_id));
     const activeAnimalIds = new Set(activeAnimals.map(a => a.id));
     const validAppts = allAppts.filter(a => activeClientIds.has(a.client_id) && activeAnimalIds.has(a.animal_id));
     const todayAppointments = validAppts.filter(a => a.appointment_date.startsWith(today)).length;
