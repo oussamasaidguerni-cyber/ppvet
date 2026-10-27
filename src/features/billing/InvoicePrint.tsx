@@ -31,16 +31,16 @@ export default function InvoicePrint() {
     <div className="p-8 max-w-3xl mx-auto">
       <div className="mb-8 border-b pb-4">
         <h1 className="text-2xl font-bold">{clinic?.clinic_name || 'P&PVET Clinic'}</h1>
-        <p className="text-sm text-gray-600">{clinic?.phone} {clinic?.address}</p>
-        <p className="text-sm text-gray-600">Currency: {clinic?.currency || 'DZD'}</p>
+        <p className="text-sm text-muted-foreground">{clinic?.phone} {clinic?.address}</p>
+        <p className="text-sm text-muted-foreground">Currency: {clinic?.currency || 'DZD'}</p>
       </div>
 
       <div className="mb-6 grid grid-cols-2 gap-4">
         <div>
           <h2 className="font-semibold mb-2">Bill To:</h2>
           <p>{client?.full_name}</p>
-          <p className="text-sm text-gray-600">{client?.phone}</p>
-          <p className="text-sm text-gray-600">{client?.address}</p>
+          <p className="text-sm text-muted-foreground">{client?.phone}</p>
+          <p className="text-sm text-muted-foreground">{client?.address}</p>
         </div>
         <div className="text-right">
           <p><strong>Invoice:</strong> {invoice.invoice_number}</p>

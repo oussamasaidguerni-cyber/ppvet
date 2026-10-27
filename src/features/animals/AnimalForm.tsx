@@ -76,7 +76,7 @@ export default function AnimalForm() {
           </div>
           <div>
             <Label htmlFor="sex">Sex</Label>
-            <select id="sex" {...register('sex')} className="flex h-10 w-full border border-gray-300 bg-white px-3 py-2 text-sm">
+            <select id="sex" {...register('sex')} className="flex h-10 w-full border border-border border-border bg-background px-3 py-2 text-sm">
               <option value="">Select...</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -123,7 +123,7 @@ export default function AnimalForm() {
 
         <div>
           <Label htmlFor="notes">Notes</Label>
-          <textarea id="notes" {...register('notes')} className="flex min-h-[80px] w-full border border-gray-300 bg-white px-3 py-2 text-sm" />
+          <textarea id="notes" {...register('notes')} className="flex min-h-[80px] w-full border border-border border-border bg-background px-3 py-2 text-sm" />
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}

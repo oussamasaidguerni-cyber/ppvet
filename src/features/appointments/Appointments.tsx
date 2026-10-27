@@ -139,14 +139,14 @@ export default function Appointments() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label>Client</Label>
-                <select className="w-full h-10 border border-gray-300 px-3" onChange={(e) => handleClientChange(e.target.value)} required>
+                <select className="w-full h-10 border border-border px-3" onChange={(e) => handleClientChange(e.target.value)} required>
                   <option value="">Select...</option>
                   {clients.map(c => <option key={c.id} value={c.id}>{c.full_name}</option>)}
                 </select>
               </div>
               <div>
                 <Label>Animal</Label>
-                <select className="w-full h-10 border border-gray-300 px-3" onChange={(e) => setFormData({...formData, animal_id: e.target.value})} required>
+                <select className="w-full h-10 border border-border px-3" onChange={(e) => setFormData({...formData, animal_id: e.target.value})} required>
                   <option value="">Select...</option>
                   {clientAnimals.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>
@@ -160,7 +160,7 @@ export default function Appointments() {
             </div>
             <div>
               <Label>Type</Label>
-              <select className="w-full h-10 border border-gray-300 px-3" value={formData.appointment_type} onChange={(e) => setFormData({...formData, appointment_type: e.target.value})}>
+              <select className="w-full h-10 border border-border px-3" value={formData.appointment_type} onChange={(e) => setFormData({...formData, appointment_type: e.target.value})}>
                 <option value="consultation">Consultation</option>
                 <option value="vaccination">Vaccination</option>
                 <option value="surgery">Surgery</option>
@@ -181,7 +181,7 @@ export default function Appointments() {
 
       <div className="border border-gray-200">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-gray-200">
             <tr>
               <th className="text-left px-4 py-3 text-sm font-medium">Date</th>
               <th className="text-left px-4 py-3 text-sm font-medium">Client</th>
@@ -225,7 +225,7 @@ export default function Appointments() {
           </tbody>
         </table>
         {appointments.length === 0 && (
-          <div className="p-6 text-center text-gray-600">No appointments</div>
+          <div className="p-6 text-center text-muted-foreground">No appointments</div>
         )}
       </div>
     </div>

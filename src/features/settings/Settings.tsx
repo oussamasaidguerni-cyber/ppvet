@@ -144,7 +144,7 @@ export default function Settings() {
             <input type="file" accept=".json" onChange={handleRestore} className="hidden" />
           </label>
         </div>
-        <p className="text-sm text-gray-600">Data stored in browser (IndexedDB). Export regularly.</p>
+        <p className="text-sm text-muted-foreground">Data stored in browser (IndexedDB). Export regularly.</p>
       </div>
     </div>
   )

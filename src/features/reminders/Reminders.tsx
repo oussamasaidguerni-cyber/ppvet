@@ -66,14 +66,14 @@ export default function Reminders() {
       <h2 className="text-lg font-semibold mb-3">Reminders</h2>
       <div className="space-y-2">
         {reminders.length === 0 ? (
-          <div className="border border-gray-200 p-3 text-sm text-gray-600">No reminders</div>
+          <div className="border border-gray-200 p-3 text-sm text-muted-foreground">No reminders</div>
         ) : (
           reminders.map((r, idx) => (
-            <Link key={idx} to={r.link} className="block border border-gray-200 p-3 hover:bg-gray-50">
+            <Link key={idx} to={r.link} className="block border border-gray-200 p-3 hover:bg-muted">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-sm">{r.title}</div>
-                  <div className="text-sm text-gray-600">{r.subtitle}</div>
+                  <div className="text-sm text-muted-foreground">{r.subtitle}</div>
                 </div>
                 <div className="text-right">
                   <span className={`text-xs px-2 py-1 ${
@@ -81,7 +81,7 @@ export default function Reminders() {
                     r.type === 'today' ? 'bg-yellow-100 text-yellow-800' :
                     'bg-gray-100 text-gray-800'
                   }`}>{r.type}</span>
-                  <div className="text-xs text-gray-600 mt-1">{r.date}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{r.date}</div>
                 </div>
               </div>
             </Link>

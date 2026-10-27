@@ -36,7 +36,7 @@ export default function ClientsList() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold">Clients</h1>
         </div>
-        <div className="text-sm text-gray-600">Loading...</div>
+        <div className="text-sm text-muted-foreground">Loading...</div>
       </div>
     )
   }
@@ -67,7 +67,7 @@ export default function ClientsList() {
 
       {clients.length === 0 ? (
         <div className="border border-gray-200 p-6 text-center">
-          <p className="text-gray-600 mb-4">No clients yet.</p>
+          <p className="text-muted-foreground mb-4">No clients yet.</p>
           <Link to="/clients/new">
             <Button>Add First Client</Button>
           </Link>
@@ -75,7 +75,7 @@ export default function ClientsList() {
       ) : (
         <div className="border border-gray-200 overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-muted border-b border-gray-200">
               <tr>
                 <th className="text-left px-4 py-3 text-sm font-medium">Name</th>
                 <th className="text-left px-4 py-3 text-sm font-medium">Phone</th>
@@ -87,8 +87,8 @@ export default function ClientsList() {
               {clients.map((client) => (
                 <tr key={client.id} className="border-b border-gray-200 last:border-0">
                   <td className="px-4 py-3">{client.full_name}</td>
-                  <td className="px-4 py-3 text-gray-600">{client.phone || '-'}</td>
-                  <td className="px-4 py-3 text-gray-600">{client.address || '-'}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{client.phone || '-'}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{client.address || '-'}</td>
                   <td className="px-4 py-3 flex gap-2">
                     <Link to={`/clients/${client.id}`} className="text-sm text-black underline">
                       View

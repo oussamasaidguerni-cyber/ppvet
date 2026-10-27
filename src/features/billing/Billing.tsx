@@ -112,7 +112,7 @@ export default function Billing() {
         <form onSubmit={handleSubmit} className="border border-gray-200 p-4 mb-6 space-y-4">
           <div>
             <Label>Client</Label>
-            <select className="w-full h-10 border border-gray-300 px-3" onChange={(e) => setFormData({...formData, client_id: e.target.value})} required>
+            <select className="w-full h-10 border border-border px-3" onChange={(e) => setFormData({...formData, client_id: e.target.value})} required>
               <option value="">Select...</option>
               {clients.map(c => <option key={c.id} value={c.id}>{c.full_name}</option>)}
             </select>
@@ -122,7 +122,7 @@ export default function Billing() {
             <Label>Items</Label>
             {formData.items.map((item, idx) => (
               <div key={idx} className="grid grid-cols-12 gap-2 mb-2">
-                <select className="col-span-3 h-10 border border-gray-300 px-2" onChange={(e) => updateItem(idx, 'product_id', e.target.value)}>
+                <select className="col-span-3 h-10 border border-border px-2" onChange={(e) => updateItem(idx, 'product_id', e.target.value)}>
                   <option value="">Custom</option>
                   {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.selling_price} DZD)</option>)}
                 </select>
@@ -152,7 +152,7 @@ export default function Billing() {
 
       <div className="border border-gray-200">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-gray-200">
             <tr>
               <th className="text-left px-4 py-3 text-sm font-medium">Invoice #</th>
               <th className="text-left px-4 py-3 text-sm font-medium">Client</th>
@@ -188,7 +188,7 @@ export default function Billing() {
           </tbody>
         </table>
         {invoices.length === 0 && (
-          <div className="p-6 text-center text-gray-600">No invoices</div>
+          <div className="p-6 text-center text-muted-foreground">No invoices</div>
         )}
       </div>
     </div>

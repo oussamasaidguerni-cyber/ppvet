@@ -69,14 +69,14 @@ export default function MedicalRecords() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>Client</Label>
-              <select className="w-full h-10 border border-gray-300 px-3" onChange={(e) => handleClientChange(e.target.value)} required>
+              <select className="w-full h-10 border border-border px-3" onChange={(e) => handleClientChange(e.target.value)} required>
                 <option value="">Select...</option>
                 {clients.map(c => <option key={c.id} value={c.id}>{c.full_name}</option>)}
               </select>
             </div>
             <div>
               <Label>Animal</Label>
-              <select className="w-full h-10 border border-gray-300 px-3" onChange={(e) => setFormData({...formData, animal_id: e.target.value})} required>
+              <select className="w-full h-10 border border-border px-3" onChange={(e) => setFormData({...formData, animal_id: e.target.value})} required>
                 <option value="">Select...</option>
                 {clientAnimals.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
@@ -98,7 +98,7 @@ export default function MedicalRecords() {
           </div>
           <div>
             <Label>Clinical Observations</Label>
-            <textarea className="w-full border border-gray-300 px-3 py-2" rows={3} onChange={(e) => setFormData({...formData, clinical_observations: e.target.value})} />
+            <textarea className="w-full border border-border px-3 py-2" rows={3} onChange={(e) => setFormData({...formData, clinical_observations: e.target.value})} />
           </div>
           <div>
             <Label>Diagnosis</Label>
@@ -106,11 +106,11 @@ export default function MedicalRecords() {
           </div>
           <div>
             <Label>Treatment Plan</Label>
-            <textarea className="w-full border border-gray-300 px-3 py-2" rows={3} onChange={(e) => setFormData({...formData, treatment_plan: e.target.value})} />
+            <textarea className="w-full border border-border px-3 py-2" rows={3} onChange={(e) => setFormData({...formData, treatment_plan: e.target.value})} />
           </div>
           <div>
             <Label>Notes</Label>
-            <textarea className="w-full border border-gray-300 px-3 py-2" rows={2} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
+            <textarea className="w-full border border-border px-3 py-2" rows={2} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
           </div>
           <Button type="submit">Save Visit</Button>
         </form>

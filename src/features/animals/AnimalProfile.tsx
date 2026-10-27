@@ -71,14 +71,14 @@ export default function AnimalProfile() {
   return (
     <div>
       <div className="mb-6">
-        <Link to={`/clients/${animal.client_id}`} className="flex items-center text-sm text-gray-600 hover:text-black mb-4">
+        <Link to={`/clients/${animal.client_id}`} className="flex items-center text-sm text-muted-foreground hover:text-black mb-4">
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back to Client
         </Link>
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold">{animal.name}</h1>
-            <p className="text-gray-600 mt-1">{animal.species}</p>
+            <p className="text-muted-foreground mt-1">{animal.species}</p>
           </div>
           <Link to={`/animals/edit/${animal.id}`}>
             <Button variant="outline" size="sm">
@@ -97,19 +97,19 @@ export default function AnimalProfile() {
               <Link to={`/clients/${animal.client_id}`} className="text-black underline">
                 {animal.owner_name}
               </Link>
-              <p className="text-gray-600 mt-1">{animal.owner_phone || '-'}</p>
+              <p className="text-muted-foreground mt-1">{animal.owner_phone || '-'}</p>
             </div>
           </div>
           <div className="border border-gray-200 p-4 mt-4">
             <h2 className="font-semibold mb-3">Details</h2>
             <div className="space-y-2 text-sm">
-              <div><span className="text-gray-600">Breed:</span> {animal.breed || '-'}</div>
-              <div><span className="text-gray-600">Sex:</span> {animal.sex || '-'}</div>
-              <div><span className="text-gray-600">Birth Date:</span> {animal.birth_date || '-'}</div>
-              <div><span className="text-gray-600">Age:</span> {animal.estimated_age || '-'}</div>
-              <div><span className="text-gray-600">Color:</span> {animal.color || '-'}</div>
-              <div><span className="text-gray-600">Microchip:</span> {animal.microchip_id || '-'}</div>
-              <div><span className="text-gray-600">ID Number:</span> {animal.identification_number || '-'}</div>
+              <div><span className="text-muted-foreground">Breed:</span> {animal.breed || '-'}</div>
+              <div><span className="text-muted-foreground">Sex:</span> {animal.sex || '-'}</div>
+              <div><span className="text-muted-foreground">Birth Date:</span> {animal.birth_date || '-'}</div>
+              <div><span className="text-muted-foreground">Age:</span> {animal.estimated_age || '-'}</div>
+              <div><span className="text-muted-foreground">Color:</span> {animal.color || '-'}</div>
+              <div><span className="text-muted-foreground">Microchip:</span> {animal.microchip_id || '-'}</div>
+              <div><span className="text-muted-foreground">ID Number:</span> {animal.identification_number || '-'}</div>
               {animal.allergies && <div className="bg-red-50 border border-red-200 p-2"><span className="text-red-700 font-medium">Allergies:</span> {animal.allergies}</div>}
               {animal.clinical_warnings && <div className="bg-yellow-50 border border-yellow-200 p-2"><span className="text-yellow-700 font-medium">Warnings:</span> {animal.clinical_warnings}</div>}
             </div>
@@ -140,7 +140,7 @@ export default function AnimalProfile() {
               </form>
             )}
             {animal.weightHistory?.length === 0 ? (
-              <p className="text-gray-600 text-sm">No weight records</p>
+              <p className="text-muted-foreground text-sm">No weight records</p>
             ) : (
               <div className="space-y-2">
                 {animal.weightHistory?.map((w: any) => (
@@ -186,13 +186,13 @@ export default function AnimalProfile() {
               </form>
             )}
             {animal.vaccinations?.length === 0 ? (
-              <p className="text-gray-600 text-sm">No vaccinations</p>
+              <p className="text-muted-foreground text-sm">No vaccinations</p>
             ) : (
               <div className="space-y-2">
                 {animal.vaccinations?.map((v: any) => (
                   <div key={v.id} className="border border-gray-100 p-2 text-sm">
                     <div className="font-medium">{v.vaccine_name}</div>
-                    <div className="text-gray-600">Given: {v.date_administered} {v.next_due_date && `| Due: ${v.next_due_date}`}</div>
+                    <div className="text-muted-foreground">Given: {v.date_administered} {v.next_due_date && `| Due: ${v.next_due_date}`}</div>
                   </div>
                 ))}
               </div>
@@ -236,15 +236,15 @@ export default function AnimalProfile() {
               </form>
             )}
             {animal.prescriptions?.length === 0 ? (
-              <p className="text-gray-600 text-sm">No prescriptions</p>
+              <p className="text-muted-foreground text-sm">No prescriptions</p>
             ) : (
               <div className="space-y-2">
                 {animal.prescriptions?.map((p: any) => (
                   <div key={p.id} className="border border-gray-100 p-2 text-sm flex justify-between items-center">
                     <div>
                       <div className="font-medium">{p.medication_name}</div>
-                      <div className="text-gray-600">{p.dosage} {p.frequency} {p.duration && `- ${p.duration}`}</div>
-                      {p.instructions && <div className="text-gray-600">{p.instructions}</div>}
+                      <div className="text-muted-foreground">{p.dosage} {p.frequency} {p.duration && `- ${p.duration}`}</div>
+                      {p.instructions && <div className="text-muted-foreground">{p.instructions}</div>}
                     </div>
                     <Link to={`/prescription/print/${p.id}`} target="_blank">
                       <Button size="sm" variant="outline"><Printer className="h-3 w-3" /></Button>
@@ -258,15 +258,15 @@ export default function AnimalProfile() {
           <div className="border border-gray-200 p-4">
             <h2 className="font-semibold mb-3">Medical History</h2>
             {animal.visits?.length === 0 && animal.appointments?.length === 0 ? (
-              <p className="text-gray-600 text-sm">No medical history</p>
+              <p className="text-muted-foreground text-sm">No medical history</p>
             ) : (
               <div className="space-y-3">
                 {animal.visits?.map((visit: any) => (
                   <div key={visit.id} className="border-l-2 border-gray-300 pl-3 py-2">
                     <div className="text-sm font-medium">{new Date(visit.visit_date).toLocaleDateString()}</div>
-                    {visit.chief_complaint && <div className="text-sm mt-1"><span className="text-gray-600">Complaint:</span> {visit.chief_complaint}</div>}
-                    {visit.diagnosis && <div className="text-sm"><span className="text-gray-600">Diagnosis:</span> {visit.diagnosis}</div>}
-                    {visit.treatment_plan && <div className="text-sm"><span className="text-gray-600">Treatment:</span> {visit.treatment_plan}</div>}
+                    {visit.chief_complaint && <div className="text-sm mt-1"><span className="text-muted-foreground">Complaint:</span> {visit.chief_complaint}</div>}
+                    {visit.diagnosis && <div className="text-sm"><span className="text-muted-foreground">Diagnosis:</span> {visit.diagnosis}</div>}
+                    {visit.treatment_plan && <div className="text-sm"><span className="text-muted-foreground">Treatment:</span> {visit.treatment_plan}</div>}
                   </div>
                 ))}
               </div>

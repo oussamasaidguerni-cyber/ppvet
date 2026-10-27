@@ -89,14 +89,14 @@ export default function Inventory() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Product</Label>
-              <select className="w-full h-10 border border-gray-300 px-3" onChange={(e) => setAdjustData({...adjustData, product_id: e.target.value})} required>
+              <select className="w-full h-10 border border-border px-3" onChange={(e) => setAdjustData({...adjustData, product_id: e.target.value})} required>
                 <option value="">Select...</option>
                 {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.current_stock} {p.unit})</option>)}
               </select>
             </div>
             <div>
               <Label>Type</Label>
-              <select className="w-full h-10 border border-gray-300 px-3" onChange={(e) => setAdjustData({...adjustData, adjustment_type: e.target.value})}>
+              <select className="w-full h-10 border border-border px-3" onChange={(e) => setAdjustData({...adjustData, adjustment_type: e.target.value})}>
                 <option value="add">Add Stock</option>
                 <option value="remove">Remove Stock</option>
               </select>
@@ -158,7 +158,7 @@ export default function Inventory() {
 
       <div className="border border-gray-200">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-gray-200">
             <tr>
               <th className="text-left px-4 py-3 text-sm font-medium">Name</th>
               <th className="text-left px-4 py-3 text-sm font-medium">Category</th>
@@ -171,7 +171,7 @@ export default function Inventory() {
             {products.map((prod) => (
               <tr key={prod.id} className="border-b border-gray-200 last:border-0">
                 <td className="px-4 py-3">{prod.name}</td>
-                <td className="px-4 py-3 text-gray-600">{prod.category || '-'}</td>
+                <td className="px-4 py-3 text-muted-foreground">{prod.category || '-'}</td>
                 <td className="px-4 py-3">{prod.selling_price} DZD</td>
                 <td className="px-4 py-3">{prod.current_stock} {prod.unit}</td>
                 <td className="px-4 py-3">{prod.minimum_stock}</td>
@@ -180,7 +180,7 @@ export default function Inventory() {
           </tbody>
         </table>
         {products.length === 0 && (
-          <div className="p-6 text-center text-gray-600">No products</div>
+          <div className="p-6 text-center text-muted-foreground">No products</div>
         )}
       </div>
     </div>

@@ -30,7 +30,7 @@ export default function ClientProfile() {
   return (
     <div>
       <div className="mb-6">
-        <Link to="/clients" className="flex items-center text-sm text-gray-600 hover:text-black mb-4">
+        <Link to="/clients" className="flex items-center text-sm text-muted-foreground hover:text-black mb-4">
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back to Clients
         </Link>
@@ -43,20 +43,20 @@ export default function ClientProfile() {
             <h2 className="font-semibold mb-3">Contact Information</h2>
             <div className="space-y-2 text-sm">
               <div>
-                <span className="text-gray-600">Phone:</span>
+                <span className="text-muted-foreground">Phone:</span>
                 <p>{client.phone || '-'}</p>
               </div>
               <div>
-                <span className="text-gray-600">Secondary Phone:</span>
+                <span className="text-muted-foreground">Secondary Phone:</span>
                 <p>{client.secondary_phone || '-'}</p>
               </div>
               <div>
-                <span className="text-gray-600">Address:</span>
+                <span className="text-muted-foreground">Address:</span>
                 <p>{client.address || '-'}</p>
               </div>
               {client.notes && (
                 <div>
-                  <span className="text-gray-600">Notes:</span>
+                  <span className="text-muted-foreground">Notes:</span>
                   <p>{client.notes}</p>
                 </div>
               )}
@@ -77,7 +77,7 @@ export default function ClientProfile() {
 
           {client.animals?.length === 0 ? (
             <div className="border border-gray-200 p-6 text-center">
-              <p className="text-gray-600 mb-4">No animals registered</p>
+              <p className="text-muted-foreground mb-4">No animals registered</p>
               <Link to={`/clients/${client.id}/animals/new`}>
                 <Button>Register First Animal</Button>
               </Link>
@@ -85,7 +85,7 @@ export default function ClientProfile() {
           ) : (
             <div className="border border-gray-200">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-muted border-b border-gray-200">
                   <tr>
                     <th className="text-left px-4 py-3 text-sm font-medium">Name</th>
                     <th className="text-left px-4 py-3 text-sm font-medium">Species</th>
@@ -97,8 +97,8 @@ export default function ClientProfile() {
                   {client.animals?.map((animal: any) => (
                     <tr key={animal.id} className="border-b border-gray-200 last:border-0">
                       <td className="px-4 py-3">{animal.name}</td>
-                      <td className="px-4 py-3 text-gray-600">{animal.species}</td>
-                      <td className="px-4 py-3 text-gray-600">{animal.breed || '-'}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{animal.species}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{animal.breed || '-'}</td>
                       <td className="px-4 py-3">
                         <Link to={`/animals/${animal.id}`} className="text-sm text-black underline">
                           View
