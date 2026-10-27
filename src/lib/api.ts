@@ -223,6 +223,13 @@ export const api = {
     }
     return db.invoices.get(data.invoice_id);
   },
+  deleteInvoice: async (id: number) => {
+    await db.transaction('rw', [db.invoices, db.invoice_items, db.payments], async () => {
+      await db.invoice_items.where('invoice_id').equals(id).delete();
+      await db.payments.where('invoice_id').equals(id).delete();
+      await db.invoices.delete(id);
+    });
+  },
   getInvoiceDetails: async (id: number) => {
     const invoice = await db.invoices.get(id);
     const client = await db.clients.get(invoice!.client_id);
