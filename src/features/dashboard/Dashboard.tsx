@@ -44,8 +44,15 @@ export default function Dashboard() {
         .startsWith(today)
         .toArray()
       
+      const activeClients = await db.clients.where('is_active').equals(1).toArray()
+      const activeClientIds = new Set(activeClients.map(c => c.id))
+      const activeAnimals = await db.animals.where('is_active').equals(1).toArray()
+      const activeAnimalIds = new Set(activeAnimals.map(a => a.id))
+      
+      const validAppts = appts.filter(a => activeClientIds.has(a.client_id) && activeAnimalIds.has(a.animal_id))
+      
       const apptsWithDetails = await Promise.all(
-        appts.map(async (appt) => {
+        validAppts.map(async (appt) => {
           const animal = await db.animals.get(appt.animal_id)
           const client = await db.clients.get(appt.client_id)
           return { ...appt, animal, client }

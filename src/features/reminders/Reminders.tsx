@@ -26,13 +26,13 @@ export default function Reminders() {
       // Vaccinations due
       vaccinations.forEach(v => {
         if (v.next_due_date) {
+          const animal = animals.find(a => a.id === v.animal_id && a.is_active === 1)
+          if (!animal) return
+          const client = clients.find(c => c.id === animal?.client_id && c.is_active === 1)
+          if (!client) return
           if (v.next_due_date < today) {
-            const animal = animals.find(a => a.id === v.animal_id)
-            const client = clients.find(c => c.id === animal?.client_id)
             items.push({ type: 'overdue', title: `Vaccine overdue: ${v.vaccine_name}`, subtitle: `${animal?.name} - ${client?.full_name}`, link: `/animals/${v.animal_id}`, date: v.next_due_date })
           } else if (v.next_due_date <= in30Days) {
-            const animal = animals.find(a => a.id === v.animal_id)
-            const client = clients.find(c => c.id === animal?.client_id)
             items.push({ type: 'soon', title: `Vaccine due: ${v.vaccine_name}`, subtitle: `${animal?.name} - ${client?.full_name}`, link: `/animals/${v.animal_id}`, date: v.next_due_date })
           }
         }
@@ -41,9 +41,10 @@ export default function Reminders() {
       // Appointments
       appointments.forEach(appt => {
         if (appt.status === 'cancelled') return
+        const animal = animals.find(a => a.id === appt.animal_id && a.is_active === 1)
+        const client = clients.find(c => c.id === appt.client_id && c.is_active === 1)
+        if (!animal || !client) return
         const apptDate = appt.appointment_date.split('T')[0]
-        const animal = animals.find(a => a.id === appt.animal_id)
-        const client = clients.find(c => c.id === appt.client_id)
         if (apptDate === today && appt.status !== 'completed') {
           items.push({ type: 'today', title: `Appointment today`, subtitle: `${animal?.name} - ${client?.full_name} - ${appt.reason}`, link: `/appointments`, date: apptDate })
         } else if (apptDate >= today && apptDate <= in7Days && appt.status !== 'completed') {

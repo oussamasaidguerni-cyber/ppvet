@@ -19,8 +19,13 @@ export const api = {
     const animals = await db.animals.where('is_active').equals(1).count();
     const today = new Date().toISOString().split('T')[0];
     const allAppts = await db.appointments.toArray();
-    const todayAppointments = allAppts.filter(a => a.appointment_date.startsWith(today)).length;
-    const upcomingAppointments = allAppts.filter(a => a.appointment_date >= new Date().toISOString() && a.status !== 'cancelled' && a.status !== 'completed').length;
+    const activeClients = await db.clients.where('is_active').equals(1).toArray();
+    const activeClientIds = new Set(activeClients.map(c => c.id));
+    const activeAnimals = await db.animals.where('is_active').equals(1).toArray();
+    const activeAnimalIds = new Set(activeAnimals.map(a => a.id));
+    const validAppts = allAppts.filter(a => activeClientIds.has(a.client_id) && activeAnimalIds.has(a.animal_id));
+    const todayAppointments = validAppts.filter(a => a.appointment_date.startsWith(today)).length;
+    const upcomingAppointments = validAppts.filter(a => a.appointment_date >= new Date().toISOString() && a.status !== 'cancelled' && a.status !== 'completed').length;
     const invoices = await db.invoices.toArray();
     const outstandingBalance = invoices.filter(i => i.status !== 'paid').reduce((sum, i) => sum + (i.balance || 0), 0);
     const products = await db.products.toArray();
@@ -51,6 +56,9 @@ export const api = {
   },
   getClient: async (id: number) => {
     const client = await db.clients.get(id);
+    if (!client || client.is_active !== 1) {
+      throw new Error('Client not found');
+    }
     const animals = await db.animals.where('client_id').equals(id).and(a => a.is_active === 1).toArray();
     const invoices = await db.invoices.where('client_id').equals(id).toArray();
     const appointments = await db.appointments.where('client_id').equals(id).toArray();
@@ -72,7 +80,13 @@ export const api = {
   },
   getAnimal: async (id: number) => {
     const animal = await db.animals.get(id);
+    if (!animal || animal.is_active !== 1) {
+      throw new Error('Animal not found');
+    }
     const client = await db.clients.get(animal!.client_id);
+    if (!client || client.is_active !== 1) {
+      throw new Error('Animal not found');
+    }
     const visits = await db.visits.where('animal_id').equals(id).toArray();
     const appointments = await db.appointments.where('animal_id').equals(id).toArray();
     const vaccinations = await db.vaccinations.where('animal_id').equals(id).toArray();
