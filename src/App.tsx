@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import AppLayout from './components/layout/AppLayout'
 import CommandPalette from './components/CommandPalette'
+import IntroAnimation from './components/IntroAnimation'
 import Dashboard from './features/dashboard/Dashboard'
 import ClientsList from './features/clients/ClientsList'
 import ClientForm from './features/clients/ClientForm'
@@ -20,31 +22,54 @@ import Inventory from './features/inventory/Inventory'
 import Settings from './features/settings/Settings'
 
 function App() {
+  const [showIntro, setShowIntro] = useState(false)
+
+  useEffect(() => {
+    try {
+      const hasSeenIntro = localStorage.getItem('ppvet-intro-seen')
+      if (!hasSeenIntro) {
+        setShowIntro(true)
+      }
+    } catch {
+      // If localStorage fails, don't show intro
+    }
+  }, [])
+
+  const handleIntroComplete = () => {
+    try {
+      localStorage.setItem('ppvet-intro-seen', 'true')
+    } catch {}
+    setShowIntro(false)
+  }
+
   return (
-    <Router>
-      <AppLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/clients" element={<ClientsList />} />
-          <Route path="/clients/new" element={<ClientForm />} />
-          <Route path="/clients/edit/:id" element={<ClientEdit />} />
-          <Route path="/clients/:id" element={<ClientProfile />} />
-          <Route path="/clients/:clientId/animals/new" element={<AnimalForm />} />
-          <Route path="/animals/edit/:id" element={<AnimalEdit />} />
-          <Route path="/animals/:id" element={<AnimalProfile />} />
-          <Route path="/appointments" element={<Appointments />} />
-          <Route path="/appointments/calendar" element={<AppointmentCalendar />} />
-          <Route path="/medical" element={<MedicalRecords />} />
-          <Route path="/medical/start-visit" element={<StartVisit />} />
-          <Route path="/billing" element={<Billing />} />
-          <Route path="/billing/print/:id" element={<InvoicePrint />} />
-          <Route path="/prescription/print/:id" element={<PrescriptionPrint />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/settings" element={<Settings />} />
-        </Routes>
-      </AppLayout>
-      <CommandPalette />
-    </Router>
+    <>
+      {showIntro && <IntroAnimation onComplete={handleIntroComplete} />}
+      <Router>
+        <AppLayout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/clients" element={<ClientsList />} />
+            <Route path="/clients/new" element={<ClientForm />} />
+            <Route path="/clients/edit/:id" element={<ClientEdit />} />
+            <Route path="/clients/:id" element={<ClientProfile />} />
+            <Route path="/clients/:clientId/animals/new" element={<AnimalForm />} />
+            <Route path="/animals/edit/:id" element={<AnimalEdit />} />
+            <Route path="/animals/:id" element={<AnimalProfile />} />
+            <Route path="/appointments" element={<Appointments />} />
+            <Route path="/appointments/calendar" element={<AppointmentCalendar />} />
+            <Route path="/medical" element={<MedicalRecords />} />
+            <Route path="/medical/start-visit" element={<StartVisit />} />
+            <Route path="/billing" element={<Billing />} />
+            <Route path="/billing/print/:id" element={<InvoicePrint />} />
+            <Route path="/prescription/print/:id" element={<PrescriptionPrint />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/settings" element={<Settings />} />
+          </Routes>
+        </AppLayout>
+        <CommandPalette />
+      </Router>
+    </>
   )
 }
 
