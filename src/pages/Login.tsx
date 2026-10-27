@@ -33,12 +33,13 @@ export default function Login() {
   return (
     <AuthLayout>
       <div className="bg-white border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold mb-6">Login</h2>
+        <h2 className="text-xl font-semibold mb-6">Sign In</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <Label htmlFor="email">Name</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
+              type="email"
               {...register('email')}
               className="mt-1"
             />
@@ -56,7 +57,7 @@ export default function Login() {
             <p className="text-sm text-red-600">{error}</p>
           )}
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Loading...' : 'Login'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>
       </div>
