@@ -2,38 +2,21 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Plus, ArrowLeft } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
-import { supabase } from '../../lib/supabase'
-import type { Client, Animal } from '../../types/database'
+import { api } from '../../lib/api'
 
 export default function ClientProfile() {
   const { id } = useParams()
-  const [client, setClient] = useState<Client | null>(null)
-  const [animals, setAnimals] = useState<Animal[]>([])
+  const [client, setClient] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (id) loadClientData()
+    if (id) loadClient()
   }, [id])
 
-  const loadClientData = async () => {
+  const loadClient = async () => {
     try {
-      const { data: clientData, error: clientError } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('id', id)
-        .single()
-
-      if (clientError) throw clientError
-      setClient(clientData)
-
-      const { data: animalsData, error: animalsError } = await supabase
-        .from('animals')
-        .select('*')
-        .eq('client_id', id)
-        .order('created_at', { ascending: false })
-
-      if (animalsError) throw animalsError
-      setAnimals(animalsData || [])
+      const data = await api.getClient(parseInt(id!))
+      setClient(data)
     } catch (error) {
       console.error('Error loading client:', error)
     } finally {
@@ -41,29 +24,8 @@ export default function ClientProfile() {
     }
   }
 
-  if (loading) {
-    return (
-      <div>
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold">Client Profile</h1>
-        </div>
-        <div className="text-sm text-gray-600">Loading...</div>
-      </div>
-    )
-  }
-
-  if (!client) {
-    return (
-      <div>
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold">Client Profile</h1>
-        </div>
-        <div className="border border-gray-200 p-6 text-center">
-          <p className="text-gray-600">Client not found</p>
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <div>Loading...</div>
+  if (!client) return <div>Client not found</div>
 
   return (
     <div>
@@ -85,8 +47,8 @@ export default function ClientProfile() {
                 <p>{client.phone || '-'}</p>
               </div>
               <div>
-                <span className="text-gray-600">Email:</span>
-                <p>{client.email || '-'}</p>
+                <span className="text-gray-600">Secondary Phone:</span>
+                <p>{client.secondary_phone || '-'}</p>
               </div>
               <div>
                 <span className="text-gray-600">Address:</span>
@@ -113,7 +75,7 @@ export default function ClientProfile() {
             </Link>
           </div>
 
-          {animals.length === 0 ? (
+          {client.animals?.length === 0 ? (
             <div className="border border-gray-200 p-6 text-center">
               <p className="text-gray-600 mb-4">No animals registered</p>
               <Link to={`/clients/${client.id}/animals/new`}>
@@ -128,17 +90,15 @@ export default function ClientProfile() {
                     <th className="text-left px-4 py-3 text-sm font-medium">Name</th>
                     <th className="text-left px-4 py-3 text-sm font-medium">Species</th>
                     <th className="text-left px-4 py-3 text-sm font-medium">Breed</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium">Sex</th>
                     <th className="text-left px-4 py-3 text-sm font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {animals.map((animal) => (
+                  {client.animals?.map((animal: any) => (
                     <tr key={animal.id} className="border-b border-gray-200 last:border-0">
                       <td className="px-4 py-3">{animal.name}</td>
                       <td className="px-4 py-3 text-gray-600">{animal.species}</td>
                       <td className="px-4 py-3 text-gray-600">{animal.breed || '-'}</td>
-                      <td className="px-4 py-3 text-gray-600 capitalize">{animal.sex || '-'}</td>
                       <td className="px-4 py-3">
                         <Link to={`/animals/${animal.id}`} className="text-sm text-black underline">
                           View

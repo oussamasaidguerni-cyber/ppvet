@@ -10,11 +10,8 @@ import {
   Package, 
   Settings,
   Menu,
-  X,
-  LogOut
+  X
 } from 'lucide-react'
-import { useAuth } from '../../hooks/useAuth'
-import { Button } from '../ui/Button'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -33,7 +30,6 @@ const navigation = [
 export default function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
-  const { signOut } = useAuth()
 
   return (
     <div className="min-h-screen bg-white">
@@ -96,12 +92,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 )
               })}
             </nav>
-            <div className="px-3 py-4 border-t border-gray-200">
-              <Button variant="ghost" className="w-full justify-start" onClick={signOut}>
-                <LogOut className="h-5 w-5 mr-3" />
-                Sign Out
-              </Button>
-            </div>
           </div>
         </div>
       </div>

@@ -1,100 +1,49 @@
 # P&PVET - Veterinary Clinic Management System
 
-A production-ready veterinary clinic management application for a solo veterinarian in Algeria. Built with React, TypeScript, Vite, Tailwind CSS, and Supabase.
+Simple, local veterinary clinic management application. No login, no setup wizard - just works.
 
 ## Features
 
-- **Authentication** - Secure username/password login with first-login password change
-- **Client Management** - Create, view, edit clients and their animals
-- **Animal Profiles** - Complete animal records with medical history
-- **Appointments** - Schedule and manage appointments
-- **Medical Records** - Clinical visits, diagnoses, treatments, prescriptions
-- **Vaccinations** - Track vaccination history and due dates
-- **Billing & Invoices** - Create invoices with line items, partial payments
-- **Inventory** - Product management with stock tracking
-- **Dashboard** - Real-time statistics from database
-- **Settings** - Clinic configuration and password management
+- Client management
+- Animal records with medical history
+- Appointments
+- Medical visits and records
+- Billing and payments
+- Inventory with stock tracking
+- Dashboard with real statistics
+- Backup functionality
 
 ## Tech Stack
 
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS
-- **Routing**: React Router DOM
-- **Forms**: React Hook Form + Zod
-- **Backend/DB**: Supabase (PostgreSQL, Auth, RLS)
-- **Icons**: Lucide React
-- **Date**: date-fns
-
-## Prerequisites
-
-- Node.js 18+
-- npm or yarn
-- Supabase account and project
+- React + TypeScript + Vite
+- Express.js + SQLite (better-sqlite3)
+- Tailwind CSS
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/oussamasaidguerni-cyber/ppvet.git
-cd ppvet
-```
-
-2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
-```bash
-cp .env.example .env
-```
-
-Edit `.env` with your values:
-```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-MEHDI_INITIAL_PASSWORD=your_secure_initial_password
-```
-
-## Database Setup
-
-1. Create a Supabase project at [supabase.com](https://supabase.com)
-2. Go to SQL Editor in your Supabase dashboard
-3. Run migrations in order:
-   - `supabase/migrations/20240101000000_complete_schema.sql`
-   - `supabase/migrations/20240101000001_rls_policies.sql`
-4. Go to Authentication > Users and create user:
-   - Email: `mehdi@ppvet.local` (or configure username mapping)
-   - Password: Use value from `MEHDI_INITIAL_PASSWORD`
-5. Run `scripts/create-mehdi-user.sql` in SQL Editor
-
-## Development
+## Run
 
 ```bash
 npm run dev
 ```
 
-## Build
+This starts both the backend (http://localhost:3001) and frontend (http://localhost:5173).
 
-```bash
-npm run build
-```
+## Database
 
-## Login
+Data is stored in `data/ppvet.db`. The database is created automatically on first run.
 
-- Username: `mehdi`
-- Password: Use the password set in Supabase Auth (from MEHDI_INITIAL_PASSWORD)
-- On first login, you'll be prompted to change your password
+## Backup
 
-## Important Notes
+Use Settings > Download Backup or copy the `data/ppvet.db` file.
 
-- All data is stored in Supabase PostgreSQL with Row Level Security
-- No demo data is seeded - empty states guide you to create your first records
-- Financial calculations use NUMERIC types for precision
-- Stock updates are transactional
-- All passwords are hashed by Supabase Auth
-- Never commit real credentials
+## Notes
 
-## License
-
-Private - All rights reserved
+- Uses Algerian Dinar (DZD)
+- All data persists locally
+- No internet connection required
+- Works offline

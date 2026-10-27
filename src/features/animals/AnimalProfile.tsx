@@ -1,40 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { supabase } from '../../lib/supabase'
-import type { Animal, Client } from '../../types/database'
+import { api } from '../../lib/api'
 
 export default function AnimalProfile() {
   const { id } = useParams()
-  const [animal, setAnimal] = useState<Animal | null>(null)
-  const [client, setClient] = useState<Client | null>(null)
+  const [animal, setAnimal] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (id) loadAnimalData()
+    if (id) loadAnimal()
   }, [id])
 
-  const loadAnimalData = async () => {
+  const loadAnimal = async () => {
     try {
-      const { data: animalData, error: animalError } = await supabase
-        .from('animals')
-        .select('*')
-        .eq('id', id)
-        .single()
-
-      if (animalError) throw animalError
-      setAnimal(animalData)
-
-      if (animalData) {
-        const { data: clientData, error: clientError } = await supabase
-          .from('clients')
-          .select('*')
-          .eq('id', animalData.client_id)
-          .single()
-
-        if (clientError) throw clientError
-        setClient(clientData)
-      }
+      const data = await api.getAnimal(parseInt(id!))
+      setAnimal(data)
     } catch (error) {
       console.error('Error loading animal:', error)
     } finally {
@@ -42,29 +23,8 @@ export default function AnimalProfile() {
     }
   }
 
-  if (loading) {
-    return (
-      <div>
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold">Animal Profile</h1>
-        </div>
-        <div className="text-sm text-gray-600">Loading...</div>
-      </div>
-    )
-  }
-
-  if (!animal) {
-    return (
-      <div>
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold">Animal Profile</h1>
-        </div>
-        <div className="border border-gray-200 p-6 text-center">
-          <p className="text-gray-600">Animal not found</p>
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <div>Loading...</div>
+  if (!animal) return <div>Animal not found</div>
 
   return (
     <div>
@@ -81,67 +41,43 @@ export default function AnimalProfile() {
         <div className="lg:col-span-1">
           <div className="border border-gray-200 p-4">
             <h2 className="font-semibold mb-3">Owner</h2>
-            {client && (
-              <div className="text-sm">
-                <Link to={`/clients/${client.id}`} className="text-black underline">
-                  {client.full_name}
-                </Link>
-                <p className="text-gray-600 mt-1">{client.phone || '-'}</p>
-                <p className="text-gray-600">{client.email || '-'}</p>
-              </div>
-            )}
+            <div className="text-sm">
+              <Link to={`/clients/${animal.client_id}`} className="text-black underline">
+                {animal.owner_name}
+              </Link>
+              <p className="text-gray-600 mt-1">{animal.owner_phone || '-'}</p>
+            </div>
+          </div>
+          <div className="border border-gray-200 p-4 mt-4">
+            <h2 className="font-semibold mb-3">Details</h2>
+            <div className="space-y-2 text-sm">
+              <div><span className="text-gray-600">Breed:</span> {animal.breed || '-'}</div>
+              <div><span className="text-gray-600">Sex:</span> {animal.sex || '-'}</div>
+              <div><span className="text-gray-600">Birth Date:</span> {animal.birth_date || '-'}</div>
+              <div><span className="text-gray-600">Age:</span> {animal.estimated_age || '-'}</div>
+              <div><span className="text-gray-600">Color:</span> {animal.color || '-'}</div>
+              <div><span className="text-gray-600">Microchip:</span> {animal.microchip_id || '-'}</div>
+              <div><span className="text-gray-600">Allergies:</span> {animal.allergies || '-'}</div>
+              {animal.clinical_warnings && <div><span className="text-gray-600">Warnings:</span> {animal.clinical_warnings}</div>}
+            </div>
           </div>
         </div>
 
         <div className="lg:col-span-2">
-          <div className="border border-gray-200 p-4">
-            <h2 className="font-semibold mb-3">Animal Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-gray-600">Name:</span>
-                <p>{animal.name}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Species:</span>
-                <p>{animal.species}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Breed:</span>
-                <p>{animal.breed || '-'}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Sex:</span>
-                <p className="capitalize">{animal.sex || '-'}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Birth Date:</span>
-                <p>{animal.birth_date || '-'}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Estimated Age:</span>
-                <p>{animal.estimated_age || '-'}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Color:</span>
-                <p>{animal.color || '-'}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Weight:</span>
-                <p>{animal.weight ? `${animal.weight} kg` : '-'}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Microchip ID:</span>
-                <p>{animal.microchip_id || '-'}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Allergies:</span>
-                <p>{animal.allergies || '-'}</p>
-              </div>
-            </div>
-            {animal.notes && (
-              <div className="mt-4">
-                <span className="text-gray-600 text-sm">Notes:</span>
-                <p className="text-sm mt-1">{animal.notes}</p>
+          <div className="border border-gray-200 p-4 mb-4">
+            <h2 className="font-semibold mb-3">Medical History</h2>
+            {animal.visits?.length === 0 && animal.appointments?.length === 0 ? (
+              <p className="text-gray-600 text-sm">No medical history</p>
+            ) : (
+              <div className="space-y-3">
+                {animal.visits?.map((visit: any) => (
+                  <div key={visit.id} className="border-l-2 border-gray-300 pl-3 py-2">
+                    <div className="text-sm font-medium">{new Date(visit.visit_date).toLocaleDateString()}</div>
+                    {visit.chief_complaint && <div className="text-sm mt-1"><span className="text-gray-600">Complaint:</span> {visit.chief_complaint}</div>}
+                    {visit.diagnosis && <div className="text-sm"><span className="text-gray-600">Diagnosis:</span> {visit.diagnosis}</div>}
+                    {visit.treatment_plan && <div className="text-sm"><span className="text-gray-600">Treatment:</span> {visit.treatment_plan}</div>}
+                  </div>
+                ))}
               </div>
             )}
           </div>

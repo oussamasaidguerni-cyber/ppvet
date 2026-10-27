@@ -3,39 +3,21 @@ import { Link } from 'react-router-dom'
 import { Plus, Search } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
-import { supabase } from '../../lib/supabase'
-import type { Client } from '../../types/database'
-import { useAuth } from '../../hooks/useAuth'
+import { api } from '../../lib/api'
 
 export default function ClientsList() {
-  const [clients, setClients] = useState<Client[]>([])
+  const [clients, setClients] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const { user } = useAuth()
 
   useEffect(() => {
     loadClients()
-  }, [user])
+  }, [])
 
-  const loadClients = async () => {
-    if (!user) return
+  const loadClients = async (search = '') => {
     try {
-      const { data: clinic } = await supabase
-        .from('clinic_settings')
-        .select('id')
-        .eq('owner_user_id', user.id)
-        .single()
-
-      if (clinic) {
-        const { data, error } = await supabase
-          .from('clients')
-          .select('*')
-          .eq('clinic_id', clinic.id)
-          .order('created_at', { ascending: false })
-
-        if (error) throw error
-        setClients(data || [])
-      }
+      const data = await api.getClients(search)
+      setClients(data)
     } catch (error) {
       console.error('Error loading clients:', error)
     } finally {
@@ -43,11 +25,10 @@ export default function ClientsList() {
     }
   }
 
-  const filteredClients = clients.filter(client =>
-    client.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    loadClients(searchTerm)
+  }
 
   if (loading) {
     return (
@@ -72,28 +53,24 @@ export default function ClientsList() {
         </Link>
       </div>
 
-      <div className="mb-4">
+      <form onSubmit={handleSearch} className="mb-4">
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search clients..."
+            placeholder="Search by name or phone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
-      </div>
+      </form>
 
-      {filteredClients.length === 0 ? (
+      {clients.length === 0 ? (
         <div className="border border-gray-200 p-6 text-center">
-          <p className="text-gray-600 mb-4">
-            {searchTerm ? 'No clients found matching your search.' : 'No clients yet.'}
-          </p>
-          {!searchTerm && (
-            <Link to="/clients/new">
-              <Button>Register First Client</Button>
-            </Link>
-          )}
+          <p className="text-gray-600 mb-4">No clients yet.</p>
+          <Link to="/clients/new">
+            <Button>Add First Client</Button>
+          </Link>
         </div>
       ) : (
         <div className="border border-gray-200">
@@ -102,16 +79,16 @@ export default function ClientsList() {
               <tr>
                 <th className="text-left px-4 py-3 text-sm font-medium">Name</th>
                 <th className="text-left px-4 py-3 text-sm font-medium">Phone</th>
-                <th className="text-left px-4 py-3 text-sm font-medium">Email</th>
+                <th className="text-left px-4 py-3 text-sm font-medium">Address</th>
                 <th className="text-left px-4 py-3 text-sm font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredClients.map((client) => (
+              {clients.map((client) => (
                 <tr key={client.id} className="border-b border-gray-200 last:border-0">
                   <td className="px-4 py-3">{client.full_name}</td>
                   <td className="px-4 py-3 text-gray-600">{client.phone || '-'}</td>
-                  <td className="px-4 py-3 text-gray-600">{client.email || '-'}</td>
+                  <td className="px-4 py-3 text-gray-600">{client.address || '-'}</td>
                   <td className="px-4 py-3">
                     <Link to={`/clients/${client.id}`} className="text-sm text-black underline">
                       View

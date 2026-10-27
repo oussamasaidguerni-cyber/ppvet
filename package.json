@@ -1,18 +1,22 @@
 {
   "name": "ppvet",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"node server/index.js\" \"vite\"",
+    "server": "node server/index.js",
+    "client": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^6.0.0",
-    "@supabase/supabase-js": "^2.118.0",
+    "better-sqlite3": "^11.5.0",
+    "cors": "^2.8.5",
     "date-fns": "^4.4.0",
+    "express": "^4.21.1",
     "lucide-react": "^1.61.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -21,11 +25,15 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "autoprefixer": "^10.6.2",
+    "concurrently": "^9.1.0",
     "oxlint": "^1.88.0",
     "postcss": "^8.5.32",
     "tailwindcss": "^3.4.19",

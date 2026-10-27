@@ -1,200 +1,113 @@
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Label } from '../../components/ui/Label'
-import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../hooks/useAuth'
-
-const settingsSchema = z.object({
-  clinic_name: z.string().min(1, 'Clinic name is required'),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  currency: z.string().min(1, 'Currency is required'),
-  timezone: z.string().min(1, 'Timezone is required'),
-})
-
-type SettingsFormData = z.infer<typeof settingsSchema>
+import { api } from '../../lib/api'
 
 export default function Settings() {
-  const [loading, setLoading] = useState(false)
-  const [fetchLoading, setFetchLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const [clinicId, setClinicId] = useState<string | null>(null)
-  const { user } = useAuth()
-
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<SettingsFormData>({
-    resolver: zodResolver(settingsSchema),
-    defaultValues: {
-      clinic_name: 'P&PVET Clinic',
-      currency: 'DZD',
-      timezone: 'Africa/Algiers',
-    },
-  })
+  const [clinic, setClinic] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
-    loadSettings()
-  }, [user])
+    loadClinic()
+  }, [])
 
-  const loadSettings = async () => {
-    if (!user) return
+  const loadClinic = async () => {
     try {
-      const { data, error } = await supabase
-        .from('clinic_settings')
-        .select('*')
-        .eq('owner_user_id', user.id)
-        .single()
-
-      if (error && error.code !== 'PGRST116') {
-        throw error
-      }
-
-      if (data) {
-        setClinicId(data.id)
-        setValue('clinic_name', data.clinic_name)
-        setValue('phone', data.phone || '')
-        setValue('address', data.address || '')
-        setValue('currency', data.currency)
-        setValue('timezone', data.timezone)
-      }
-    } catch (err: any) {
-      console.error('Error loading settings:', err)
-    } finally {
-      setFetchLoading(false)
-    }
-  }
-
-  const onSubmit = async (data: SettingsFormData) => {
-    if (!user) return
-    setError('')
-    setSuccess('')
-    setLoading(true)
-
-    try {
-      if (clinicId) {
-        const { error } = await supabase
-          .from('clinic_settings')
-          .update({
-            clinic_name: data.clinic_name,
-            phone: data.phone || null,
-            address: data.address || null,
-            currency: data.currency,
-            timezone: data.timezone,
-          })
-          .eq('id', clinicId)
-
-        if (error) throw error
-      } else {
-        const { data: newClinic, error } = await supabase
-          .from('clinic_settings')
-          .insert({
-            owner_user_id: user.id,
-            clinic_name: data.clinic_name,
-            phone: data.phone || null,
-            address: data.address || null,
-            currency: data.currency,
-            timezone: data.timezone,
-          })
-          .select()
-          .single()
-
-        if (error) throw error
-        if (newClinic) setClinicId(newClinic.id)
-      }
-      setSuccess('Settings saved successfully')
-    } catch (err: any) {
-      setError(err.message || 'An error occurred')
+      const data = await api.getClinic()
+      setClinic(data)
+    } catch (error) {
+      console.error('Error:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  if (fetchLoading) {
-    return (
-      <div>
-        <h1 className="text-2xl font-semibold mb-6">Settings</h1>
-        <div className="text-sm text-gray-600">Loading...</div>
-      </div>
-    )
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    setMessage('')
+    try {
+      await api.updateClinic(clinic)
+      setMessage('Saved')
+    } catch (error: any) {
+      setMessage(error.message)
+    } finally {
+      setSaving(false)
+    }
   }
+
+  const handleBackup = async () => {
+    try {
+      const data = await api.getBackup()
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `ppvet-backup-${Date.now()}.json`
+      a.click()
+    } catch (error: any) {
+      alert(error.message)
+    }
+  }
+
+  if (loading) return <div>Loading...</div>
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold">Clinic Settings</h1>
-        <p className="text-gray-600 mt-1">Manage your clinic information</p>
+        <h1 className="text-2xl font-semibold">Settings</h1>
+        <p className="text-gray-600 mt-1">Clinic configuration</p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl space-y-4">
+      <form onSubmit={handleSubmit} className="max-w-2xl space-y-4 mb-8">
         <div>
-          <Label htmlFor="clinic_name">Clinic Name *</Label>
+          <Label htmlFor="clinic_name">Clinic Name</Label>
           <Input
             id="clinic_name"
-            {...register('clinic_name')}
+            value={clinic?.clinic_name || ''}
+            onChange={(e) => setClinic({...clinic, clinic_name: e.target.value})}
             className="mt-1"
           />
-          {errors.clinic_name && (
-            <p className="text-sm text-red-600 mt-1">{errors.clinic_name.message}</p>
-          )}
         </div>
-
         <div>
-          <Label htmlFor="phone">Phone Number</Label>
+          <Label htmlFor="phone">Phone</Label>
           <Input
             id="phone"
-            {...register('phone')}
+            value={clinic?.phone || ''}
+            onChange={(e) => setClinic({...clinic, phone: e.target.value})}
             className="mt-1"
           />
         </div>
-
         <div>
           <Label htmlFor="address">Address</Label>
           <Input
             id="address"
-            {...register('address')}
+            value={clinic?.address || ''}
+            onChange={(e) => setClinic({...clinic, address: e.target.value})}
             className="mt-1"
           />
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="currency">Currency *</Label>
-            <Input
-              id="currency"
-              {...register('currency')}
-              className="mt-1"
-            />
-            {errors.currency && (
-              <p className="text-sm text-red-600 mt-1">{errors.currency.message}</p>
-            )}
-          </div>
-          <div>
-            <Label htmlFor="timezone">Timezone *</Label>
-            <Input
-              id="timezone"
-              {...register('timezone')}
-              className="mt-1"
-            />
-            {errors.timezone && (
-              <p className="text-sm text-red-600 mt-1">{errors.timezone.message}</p>
-            )}
-          </div>
+        <div>
+          <Label htmlFor="currency">Currency</Label>
+          <Input
+            id="currency"
+            value={clinic?.currency || 'DZD'}
+            onChange={(e) => setClinic({...clinic, currency: e.target.value})}
+            className="mt-1"
+          />
         </div>
-
-        {error && (
-          <p className="text-sm text-red-600">{error}</p>
-        )}
-        {success && (
-          <p className="text-sm text-green-600">{success}</p>
-        )}
-
-        <Button type="submit" disabled={loading}>
-          {loading ? 'Saving...' : 'Save Settings'}
-        </Button>
+        {message && <p className="text-sm text-green-600">{message}</p>}
+        <Button type="submit" disabled={saving}>{saving ? 'Saving...' : 'Save'}</Button>
       </form>
+
+      <div className="border-t border-gray-200 pt-6">
+        <h2 className="text-lg font-semibold mb-4">Backup</h2>
+        <Button onClick={handleBackup}>Download Backup</Button>
+        <p className="text-sm text-gray-600 mt-2">Database location: data/ppvet.db</p>
+      </div>
     </div>
   )
 }
