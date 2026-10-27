@@ -14,7 +14,6 @@ import {
   Bell
 } from 'lucide-react'
 import GlobalSearch from '../GlobalSearch'
-import ThemeToggle from '../ThemeToggle'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -66,9 +65,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
               )
             })}
           </nav>
-          <div className="absolute bottom-4 left-3 right-3">
-            <ThemeToggle />
-          </div>
         </div>
       </div>
 
@@ -98,9 +94,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 )
               })}
             </nav>
-            <div className="p-3 border-t border-border">
-              <ThemeToggle />
-            </div>
           </div>
         </div>
       </div>

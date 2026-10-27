@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Label } from '../../components/ui/Label'
 import { api } from '../../lib/api'
+import ThemeToggle from '../../components/ThemeToggle'
 
 export default function Settings() {
   const [clinic, setClinic] = useState<any>(null)
@@ -74,10 +75,24 @@ export default function Settings() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-semibold">Settings</h1>
-        <p className="text-gray-600 mt-1">Clinic configuration</p>
+        <p className="text-muted-foreground mt-1">Clinic configuration</p>
+      </div>
+
+      <div className="mb-8 max-w-2xl">
+        <h2 className="text-lg font-semibold mb-3">Appearance</h2>
+        <div className="border border-border p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Theme</p>
+              <p className="text-sm text-muted-foreground">Choose light, dark, or system preference</p>
+            </div>
+            <ThemeToggle />
+          </div>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-4 mb-8">
+        <h2 className="text-lg font-semibold">Clinic Information</h2>
         <div>
           <Label htmlFor="clinic_name">Clinic Name</Label>
           <Input
@@ -114,7 +129,7 @@ export default function Settings() {
             className="mt-1"
           />
         </div>
-        {message && <p className="text-sm text-green-600">{message}</p>}
+        {message && <p className="text-sm text-green-600 dark:text-green-400">{message}</p>}
         <Button type="submit" disabled={saving}>{saving ? 'Saving...' : 'Save'}</Button>
       </form>
 
