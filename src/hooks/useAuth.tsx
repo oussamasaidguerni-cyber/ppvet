@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem('ppvet_user')
     return saved ? JSON.parse(saved) : null
   })
-  const [session, setSession] = useState<any>(null)
   const [loading] = useState(false)
 
   const signIn = async (email: string, password: string) => {
@@ -52,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, session: null, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   )
