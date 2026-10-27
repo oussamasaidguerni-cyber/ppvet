@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Plus, Printer } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Label } from '../../components/ui/Label'
@@ -160,10 +161,13 @@ export default function Billing() {
                 <td className="px-4 py-3">{inv.amount_paid} DZD</td>
                 <td className="px-4 py-3">{inv.balance} DZD</td>
                 <td className="px-4 py-3 text-sm capitalize">{inv.status.replace('_', ' ')}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 flex gap-2">
                   {inv.status !== 'paid' && (
                     <button onClick={() => addPayment(inv.id)} className="text-sm text-black underline">Add Payment</button>
                   )}
+                  <Link to={`/billing/print/${inv.id}`} target="_blank" className="text-sm text-black underline flex items-center gap-1">
+                    <Printer className="h-3 w-3" /> Print
+                  </Link>
                 </td>
               </tr>
             ))}

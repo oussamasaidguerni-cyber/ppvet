@@ -53,6 +53,21 @@ export default function Settings() {
     }
   }
 
+  const handleRestore = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!confirm('Restore from backup? This will replace existing data.')) return
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
+      await api.restoreBackup(data)
+      alert('Backup restored successfully')
+      window.location.reload()
+    } catch (error: any) {
+      alert(error.message)
+    }
+  }
+
   if (loading) return <div>Loading...</div>
 
   return (
@@ -104,9 +119,17 @@ export default function Settings() {
       </form>
 
       <div className="border-t border-gray-200 pt-6">
-        <h2 className="text-lg font-semibold mb-4">Backup</h2>
-        <Button onClick={handleBackup}>Download Backup</Button>
-        <p className="text-sm text-gray-600 mt-2">Database location: data/ppvet.db</p>
+        <h2 className="text-lg font-semibold mb-4">Backup & Restore</h2>
+        <div className="flex gap-2 mb-4">
+          <Button onClick={handleBackup}>Download Backup</Button>
+          <label>
+            <Button type="button" onClick={(e) => e.preventDefault()}>
+              <span>Restore from Backup</span>
+            </Button>
+            <input type="file" accept=".json" onChange={handleRestore} className="hidden" />
+          </label>
+        </div>
+        <p className="text-sm text-gray-600">Data stored in browser (IndexedDB). Export regularly.</p>
       </div>
     </div>
   )

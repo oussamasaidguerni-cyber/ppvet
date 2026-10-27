@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Users, Calendar, Package, CreditCard, Plus } from 'lucide-react'
+import { Users, Calendar, Package, CreditCard, Plus, DollarSign } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { api } from '../../lib/api'
 
@@ -13,6 +13,10 @@ export default function Dashboard() {
     upcomingAppointments: 0,
     outstandingBalance: 0,
     lowStock: 0,
+    monthlyIncome: 0,
+    totalIncome: 0,
+    vaccinesDue: 0,
+    invoicesOverdue: 0,
   })
   const [clinic, setClinic] = useState<any>(null)
 
@@ -51,7 +55,7 @@ export default function Dashboard() {
         <p className="text-gray-600 mt-1">Welcome to {clinic?.clinic_name || 'P&PVET'}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -91,7 +95,25 @@ export default function Dashboard() {
         <div className="border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Outstanding Balance</p>
+              <p className="text-sm text-gray-600">Monthly Income</p>
+              <p className="text-2xl font-semibold mt-1">{stats.monthlyIncome} DZD</p>
+            </div>
+            <DollarSign className="h-8 w-8 text-gray-400" />
+          </div>
+        </div>
+        <div className="border border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Total Income</p>
+              <p className="text-2xl font-semibold mt-1">{stats.totalIncome} DZD</p>
+            </div>
+            <DollarSign className="h-8 w-8 text-gray-400" />
+          </div>
+        </div>
+        <div className="border border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Outstanding</p>
               <p className="text-2xl font-semibold mt-1">{stats.outstandingBalance} DZD</p>
             </div>
             <CreditCard className="h-8 w-8 text-gray-400" />
@@ -100,8 +122,8 @@ export default function Dashboard() {
         <div className="border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Low Stock</p>
-              <p className="text-2xl font-semibold mt-1">{stats.lowStock}</p>
+              <p className="text-sm text-gray-600">Low Stock / Vaccines Due</p>
+              <p className="text-2xl font-semibold mt-1">{stats.lowStock} / {stats.vaccinesDue}</p>
             </div>
             <Package className="h-8 w-8 text-gray-400" />
           </div>

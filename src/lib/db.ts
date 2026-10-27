@@ -16,6 +16,7 @@ export interface Client {
   secondary_phone?: string;
   address?: string;
   notes?: string;
+  is_active: number;
   created_at: string;
 }
 
@@ -33,6 +34,7 @@ export interface Animal {
   allergies?: string;
   clinical_warnings?: string;
   notes?: string;
+  is_active: number;
   created_at: string;
 }
 
@@ -63,6 +65,39 @@ export interface Visit {
   created_at: string;
 }
 
+export interface Prescription {
+  id?: number;
+  animal_id: number;
+  client_id: number;
+  visit_id?: number;
+  prescription_date: string;
+  medication_name: string;
+  dosage?: string;
+  frequency?: string;
+  duration?: string;
+  instructions?: string;
+  created_at: string;
+}
+
+export interface Vaccination {
+  id?: number;
+  animal_id: number;
+  vaccine_name: string;
+  date_administered: string;
+  next_due_date?: string;
+  batch_number?: string;
+  notes?: string;
+  created_at: string;
+}
+
+export interface WeightHistory {
+  id?: number;
+  animal_id: number;
+  weight: number;
+  weight_date: string;
+  notes?: string;
+}
+
 export interface Product {
   id?: number;
   name: string;
@@ -72,6 +107,15 @@ export interface Product {
   current_stock: number;
   minimum_stock: number;
   unit: string;
+  created_at: string;
+}
+
+export interface StockAdjustment {
+  id?: number;
+  product_id: number;
+  adjustment_type: string;
+  quantity: number;
+  reason: string;
   created_at: string;
 }
 
@@ -107,6 +151,7 @@ export interface Payment {
   payment_date: string;
   payment_method: string;
   notes?: string;
+  created_at: string;
 }
 
 export class PpvetDB extends Dexie {
@@ -115,20 +160,28 @@ export class PpvetDB extends Dexie {
   animals!: Table<Animal>;
   appointments!: Table<Appointment>;
   visits!: Table<Visit>;
+  prescriptions!: Table<Prescription>;
+  vaccinations!: Table<Vaccination>;
+  weight_history!: Table<WeightHistory>;
   products!: Table<Product>;
+  stock_adjustments!: Table<StockAdjustment>;
   invoices!: Table<Invoice>;
   invoice_items!: Table<InvoiceItem>;
   payments!: Table<Payment>;
 
   constructor() {
     super('ppvet');
-    this.version(1).stores({
+    this.version(2).stores({
       clinic: '++id',
-      clients: '++id, full_name, phone',
-      animals: '++id, client_id',
+      clients: '++id, full_name, phone, is_active',
+      animals: '++id, client_id, is_active',
       appointments: '++id, client_id, animal_id, appointment_date',
       visits: '++id, client_id, animal_id',
+      prescriptions: '++id, animal_id, client_id',
+      vaccinations: '++id, animal_id, next_due_date',
+      weight_history: '++id, animal_id',
       products: '++id, name',
+      stock_adjustments: '++id, product_id',
       invoices: '++id, client_id, invoice_number',
       invoice_items: '++id, invoice_id',
       payments: '++id, invoice_id'

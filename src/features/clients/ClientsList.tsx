@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, Edit } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { api } from '../../lib/api'
@@ -73,7 +73,7 @@ export default function ClientsList() {
           </Link>
         </div>
       ) : (
-        <div className="border border-gray-200">
+        <div className="border border-gray-200 overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
@@ -89,9 +89,12 @@ export default function ClientsList() {
                   <td className="px-4 py-3">{client.full_name}</td>
                   <td className="px-4 py-3 text-gray-600">{client.phone || '-'}</td>
                   <td className="px-4 py-3 text-gray-600">{client.address || '-'}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 flex gap-2">
                     <Link to={`/clients/${client.id}`} className="text-sm text-black underline">
                       View
+                    </Link>
+                    <Link to={`/clients/edit/${client.id}`} className="text-sm text-black underline flex items-center gap-1">
+                      <Edit className="h-3 w-3" /> Edit
                     </Link>
                   </td>
                 </tr>

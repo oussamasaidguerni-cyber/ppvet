@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, ArrowUp } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Label } from '../../components/ui/Label'
@@ -9,6 +9,8 @@ export default function Inventory() {
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [showAdjust, setShowAdjust] = useState(false)
+  const [adjustData, setAdjustData] = useState({ product_id: '', adjustment_type: 'add', quantity: 0, reason: '' })
   const [formData, setFormData] = useState({
     name: '', category: '', selling_price: 0, cost_price: 0, current_stock: 0, minimum_stock: 0, unit: 'piece'
   })
@@ -47,17 +49,72 @@ export default function Inventory() {
     }
   }
 
+  const handleAdjust = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      await api.adjustStock({
+        ...adjustData,
+        product_id: parseInt(adjustData.product_id),
+        quantity: parseInt(adjustData.quantity as any)
+      })
+      setShowAdjust(false)
+      setAdjustData({ product_id: '', adjustment_type: 'add', quantity: 0, reason: '' })
+      loadProducts()
+      alert('Stock adjusted')
+    } catch (error: any) {
+      alert(error.message)
+    }
+  }
+
   if (loading) return <div>Loading...</div>
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Inventory</h1>
-        <Button onClick={() => setShowForm(!showForm)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Product
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowAdjust(!showAdjust)}>
+            <ArrowUp className="h-4 w-4 mr-2" />
+            Adjust Stock
+          </Button>
+          <Button onClick={() => setShowForm(!showForm)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Product
+          </Button>
+        </div>
       </div>
+
+      {showAdjust && (
+        <form onSubmit={handleAdjust} className="border border-gray-200 p-4 mb-6 space-y-4 max-w-xl">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Product</Label>
+              <select className="w-full h-10 border border-gray-300 px-3" onChange={(e) => setAdjustData({...adjustData, product_id: e.target.value})} required>
+                <option value="">Select...</option>
+                {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.current_stock} {p.unit})</option>)}
+              </select>
+            </div>
+            <div>
+              <Label>Type</Label>
+              <select className="w-full h-10 border border-gray-300 px-3" onChange={(e) => setAdjustData({...adjustData, adjustment_type: e.target.value})}>
+                <option value="add">Add Stock</option>
+                <option value="remove">Remove Stock</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Quantity</Label>
+              <Input type="number" onChange={(e) => setAdjustData({...adjustData, quantity: parseInt(e.target.value) || 0})} required />
+            </div>
+            <div>
+              <Label>Reason</Label>
+              <Input onChange={(e) => setAdjustData({...adjustData, reason: e.target.value})} placeholder="Purchased, Expired, etc." required />
+            </div>
+          </div>
+          <Button type="submit">Apply</Button>
+        </form>
+      )}
 
       {showForm && (
         <form onSubmit={handleSubmit} className="border border-gray-200 p-4 mb-6 space-y-4 max-w-2xl">
