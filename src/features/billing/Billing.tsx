@@ -166,6 +166,7 @@ export default function Billing() {
             <select 
               id="client"
               className="w-full h-10 border border-input bg-background text-foreground px-3 focus:outline-none focus:ring-2 focus:ring-ring mt-1" 
+              style={{ colorScheme: 'light dark' }}
               value={formData.client_id}
               onChange={(e) => { setFormData({...formData, client_id: e.target.value}); setErrors({...errors, client_id: ''}) }} 
             >
@@ -187,6 +188,7 @@ export default function Billing() {
                     <Label className="text-xs md:hidden">Item/Service</Label>
                     <select 
                       className="w-full h-10 border border-input bg-background text-foreground px-2 focus:outline-none focus:ring-2 focus:ring-ring" 
+                      style={{ colorScheme: 'light dark' }}
                       value={item.product_id}
                       onChange={(e) => updateItem(idx, 'product_id', e.target.value)}
                     >

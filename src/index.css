@@ -52,20 +52,28 @@
 }
 
 /* Ensure form controls are theme-aware */
-select, option {
-  color-scheme: light;
-}
-
-.dark select, .dark option {
-  color-scheme: dark;
+select {
+  color-scheme: light dark;
 }
 
 .dark select {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--input)) !important;
 }
 
 .dark option {
-  background-color: hsl(var(--card));
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+select {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--input));
+}
+
+option {
+  background-color: hsl(var(--background));
   color: hsl(var(--foreground));
 }
