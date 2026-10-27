@@ -14,14 +14,14 @@ export default function Login() {
   const navigate = useNavigate()
 
   const { register, handleSubmit } = useForm({
-    defaultValues: { email: '', password: '' }
+    defaultValues: { username: '', password: '' }
   })
 
   const onSubmit = async (data: any) => {
     setError('')
     setLoading(true)
     try {
-      await signIn(data.email, data.password)
+      await signIn(data.username, data.password)
       navigate('/')
     } catch (err: any) {
       setError(err.message || 'Invalid credentials')
@@ -33,14 +33,13 @@ export default function Login() {
   return (
     <AuthLayout>
       <div className="bg-white border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold mb-6">Sign In</h2>
+        <h2 className="text-xl font-semibold mb-6">P&PVET Login</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="username">Username</Label>
             <Input
-              id="email"
-              type="email"
-              {...register('email')}
+              id="username"
+              {...register('username')}
               className="mt-1"
             />
           </div>
@@ -57,9 +56,10 @@ export default function Login() {
             <p className="text-sm text-red-600">{error}</p>
           )}
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Logging in...' : 'Login'}
           </Button>
         </form>
+        <p className="text-xs text-gray-500 mt-4 text-center">Username: mehdi | Password: 12345</p>
       </div>
     </AuthLayout>
   )
