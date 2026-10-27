@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"node server/index.js\" \"vite\"",
-    "server": "node server/index.js",
+    "dev": "concurrently \"node server/index.cjs\" \"vite\"",
+    "server": "node server/index.cjs",
     "client": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
