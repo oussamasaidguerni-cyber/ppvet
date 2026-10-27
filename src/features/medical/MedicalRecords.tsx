@@ -98,7 +98,7 @@ export default function MedicalRecords() {
           </div>
           <div>
             <Label>Clinical Observations</Label>
-            <textarea className="w-full border border-border px-3 py-2" rows={3} onChange={(e) => setFormData({...formData, clinical_observations: e.target.value})} />
+            <textarea className="w-full border border-input bg-background text-foreground px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" rows={3} onChange={(e) => setFormData({...formData, clinical_observations: e.target.value})} />
           </div>
           <div>
             <Label>Diagnosis</Label>
@@ -106,11 +106,11 @@ export default function MedicalRecords() {
           </div>
           <div>
             <Label>Treatment Plan</Label>
-            <textarea className="w-full border border-border px-3 py-2" rows={3} onChange={(e) => setFormData({...formData, treatment_plan: e.target.value})} />
+            <textarea className="w-full border border-input bg-background text-foreground px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" rows={3} onChange={(e) => setFormData({...formData, treatment_plan: e.target.value})} />
           </div>
           <div>
             <Label>Notes</Label>
-            <textarea className="w-full border border-border px-3 py-2" rows={2} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
+            <textarea className="w-full border border-input bg-background text-foreground px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" rows={2} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
           </div>
           <Button type="submit">Save Visit</Button>
         </form>
