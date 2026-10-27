@@ -109,8 +109,9 @@ export default function AnimalProfile() {
               <div><span className="text-gray-600">Age:</span> {animal.estimated_age || '-'}</div>
               <div><span className="text-gray-600">Color:</span> {animal.color || '-'}</div>
               <div><span className="text-gray-600">Microchip:</span> {animal.microchip_id || '-'}</div>
-              <div><span className="text-gray-600">Allergies:</span> {animal.allergies || '-'}</div>
-              {animal.clinical_warnings && <div><span className="text-gray-600">Warnings:</span> {animal.clinical_warnings}</div>}
+              <div><span className="text-gray-600">ID Number:</span> {animal.identification_number || '-'}</div>
+              {animal.allergies && <div className="bg-red-50 border border-red-200 p-2"><span className="text-red-700 font-medium">Allergies:</span> {animal.allergies}</div>}
+              {animal.clinical_warnings && <div className="bg-yellow-50 border border-yellow-200 p-2"><span className="text-yellow-700 font-medium">Warnings:</span> {animal.clinical_warnings}</div>}
             </div>
           </div>
         </div>

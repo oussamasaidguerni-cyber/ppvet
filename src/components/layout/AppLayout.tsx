@@ -10,8 +10,10 @@ import {
   Package, 
   Settings,
   Menu,
-  X
+  X,
+  Bell
 } from 'lucide-react'
+import GlobalSearch from '../GlobalSearch'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -106,8 +108,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
           >
             <Menu className="h-6 w-6" />
           </button>
-          <div className="flex-1 text-sm text-gray-600">
-            Veterinary Clinic Management
+          <GlobalSearch />
+          <div className="flex items-center gap-2">
+            <Bell className="h-5 w-5 text-gray-600" />
           </div>
         </div>
         <main className="py-6 px-4 sm:px-6 lg:px-8">

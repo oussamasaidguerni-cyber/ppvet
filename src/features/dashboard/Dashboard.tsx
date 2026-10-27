@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Users, Calendar, Package, CreditCard, Plus, DollarSign } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { api } from '../../lib/api'
+import Reminders from '../reminders/Reminders'
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true)
@@ -129,6 +130,8 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      <Reminders />
 
       <div className="mb-6">
         <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>

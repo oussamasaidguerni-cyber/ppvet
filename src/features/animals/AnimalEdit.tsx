@@ -17,6 +17,7 @@ const animalSchema = z.object({
   estimated_age: z.string().optional(),
   color: z.string().optional(),
   microchip_id: z.string().optional(),
+  identification_number: z.string().optional(),
   allergies: z.string().optional(),
   clinical_warnings: z.string().optional(),
   notes: z.string().optional(),
@@ -130,7 +131,7 @@ export default function AnimalEdit() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <Label htmlFor="color">Color</Label>
             <Input id="color" {...register('color')} className="mt-1" />
@@ -138,6 +139,10 @@ export default function AnimalEdit() {
           <div>
             <Label htmlFor="microchip_id">Microchip ID</Label>
             <Input id="microchip_id" {...register('microchip_id')} className="mt-1" />
+          </div>
+          <div>
+            <Label htmlFor="identification_number">ID Number</Label>
+            <Input id="identification_number" {...register('identification_number')} className="mt-1" />
           </div>
         </div>
 

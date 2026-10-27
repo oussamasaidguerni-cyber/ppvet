@@ -31,9 +31,12 @@ export interface Animal {
   estimated_age?: string;
   color?: string;
   microchip_id?: string;
+  identification_number?: string;
   allergies?: string;
   clinical_warnings?: string;
   notes?: string;
+  photo?: string;
+  status?: string;
   is_active: number;
   created_at: string;
 }
@@ -102,20 +105,50 @@ export interface Product {
   id?: number;
   name: string;
   category?: string;
+  sku?: string;
+  internal_code?: string;
   selling_price: number;
-  cost_price: number;
+  cost_price?: number;
   current_stock: number;
   minimum_stock: number;
   unit: string;
+  is_active: number;
+  created_at: string;
+}
+
+export interface ProductBatch {
+  id?: number;
+  product_id: number;
+  batch_number: string;
+  quantity: number;
+  quantity_remaining: number;
+  expiry_date?: string;
+  purchase_cost?: number;
+  supplier?: string;
+  received_date: string;
   created_at: string;
 }
 
 export interface StockAdjustment {
   id?: number;
   product_id: number;
+  batch_id?: number;
   adjustment_type: string;
   quantity: number;
   reason: string;
+  created_at: string;
+}
+
+export interface Reminder {
+  id?: number;
+  type: string; // appointment, vaccination, followup, missed
+  related_id?: number;
+  animal_id?: number;
+  client_id?: number;
+  title: string;
+  description?: string;
+  due_date: string;
+  status: string; // pending, completed, dismissed
   created_at: string;
 }
 
@@ -164,24 +197,28 @@ export class PpvetDB extends Dexie {
   vaccinations!: Table<Vaccination>;
   weight_history!: Table<WeightHistory>;
   products!: Table<Product>;
+  product_batches!: Table<ProductBatch>;
   stock_adjustments!: Table<StockAdjustment>;
+  reminders!: Table<Reminder>;
   invoices!: Table<Invoice>;
   invoice_items!: Table<InvoiceItem>;
   payments!: Table<Payment>;
 
   constructor() {
     super('ppvet');
-    this.version(2).stores({
+    this.version(3).stores({
       clinic: '++id',
       clients: '++id, full_name, phone, is_active',
-      animals: '++id, client_id, is_active',
+      animals: '++id, client_id, is_active, name, microchip_id, identification_number',
       appointments: '++id, client_id, animal_id, appointment_date',
       visits: '++id, client_id, animal_id',
       prescriptions: '++id, animal_id, client_id',
       vaccinations: '++id, animal_id, next_due_date',
       weight_history: '++id, animal_id',
-      products: '++id, name',
-      stock_adjustments: '++id, product_id',
+      products: '++id, name, sku, internal_code',
+      product_batches: '++id, product_id, batch_number, expiry_date',
+      stock_adjustments: '++id, product_id, batch_id',
+      reminders: '++id, type, animal_id, due_date, status',
       invoices: '++id, client_id, invoice_number',
       invoice_items: '++id, invoice_id',
       payments: '++id, invoice_id'
