@@ -20,9 +20,14 @@ import InvoicePrint from './features/billing/InvoicePrint'
 import PrescriptionPrint from './features/medical/PrescriptionPrint'
 import Inventory from './features/inventory/Inventory'
 import Settings from './features/settings/Settings'
+import ClinicAuth from './features/auth/ClinicAuth'
+import { supabase } from './lib/supabase'
+import { SYNC_CONFIG } from './lib/sync/config'
 
 function App() {
   const [showIntro, setShowIntro] = useState(false)
+  const [session, setSession] = useState<any>(null)
+  const [loading, setLoading] = useState(SYNC_CONFIG.enabled)
 
   useEffect(() => {
     try {
@@ -33,6 +38,18 @@ function App() {
     } catch {
       // If localStorage fails, don't show intro
     }
+    
+    if (SYNC_CONFIG.enabled) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session)
+        setLoading(false)
+      })
+      supabase.auth.onAuthStateChange((_event, session) => {
+        setSession(session)
+      })
+    } else {
+      setLoading(false)
+    }
   }, [])
 
   const handleIntroComplete = () => {
@@ -41,6 +58,9 @@ function App() {
     } catch {}
     setShowIntro(false)
   }
+
+  if (loading) return null
+  if (SYNC_CONFIG.enabled && !session) return <ClinicAuth />
 
   return (
     <>
