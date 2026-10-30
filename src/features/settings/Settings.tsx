@@ -4,6 +4,7 @@ import { Input } from '../../components/ui/Input'
 import { Label } from '../../components/ui/Label'
 import { api } from '../../lib/api'
 import ThemeToggle from '../../components/ThemeToggle'
+import MigrationTool from '../migration/MigrationTool'
 
 export default function Settings() {
   const [clinic, setClinic] = useState<any>(null)
@@ -88,6 +89,13 @@ export default function Settings() {
             </div>
             <ThemeToggle />
           </div>
+        </div>
+      </div>
+
+      <div className="mb-8 max-w-2xl">
+        <h2 className="text-lg font-semibold mb-3">Cloud Sync & Backup</h2>
+        <div className="border border-border p-4">
+          <MigrationTool />
         </div>
       </div>
 
