@@ -59,8 +59,11 @@ function App() {
     setShowIntro(false)
   }
 
-  if (loading) return null
-  if (SYNC_CONFIG.enabled && !session) return <ClinicAuth />
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  if (SYNC_CONFIG.enabled && !session) {
+    console.log('No session, showing auth')
+    return <ClinicAuth />
+  }
 
   return (
     <>
