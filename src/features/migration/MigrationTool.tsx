@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { Button } from '../../components/ui/Button'
 import { api } from '../../lib/api'
 import { supabase } from '../../lib/supabase'
+import { verifyMigration, checkExistingCloudData } from '../../lib/sync/verification'
 
 export default function MigrationTool() {
   const [status, setStatus] = useState('')
   const [loading, setLoading] = useState(false)
+  const [verification, setVerification] = useState<any>(null)
 
   const exportBackup = async () => {
     setLoading(true)
@@ -30,6 +32,7 @@ export default function MigrationTool() {
   const migrateToCloud = async () => {
     setLoading(true)
     setStatus('Starting migration...')
+    setVerification(null)
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
@@ -58,6 +61,19 @@ export default function MigrationTool() {
         await supabase
           .from('clinic_users')
           .insert({ user_id: user.id, clinic_id: clinicId, role: 'owner' })
+      }
+      
+      // Check for existing cloud data
+      const existing = await checkExistingCloudData(clinicId)
+      if (existing.hasData) {
+        const confirmed = confirm(
+          `Cloud clinic already has data (${Object.entries(existing.counts).filter(([_,v])=>v>0).map(([k,v])=>`${k}:${v}`).join(', ')}). ` +
+          'Migrating will upsert by ID - existing records with same IDs will be overwritten. Continue?'
+        )
+        if (!confirmed) {
+          setStatus('Migration cancelled')
+          return
+        }
       }
       
       setStatus('Uploading data...')
@@ -98,7 +114,15 @@ export default function MigrationTool() {
         await supabase.from('payments').upsert(backup.payments.map(p => ({...p, clinic_id: clinicId})))
       }
       
-      setStatus('Migration completed successfully')
+      setStatus('Verifying migration...')
+      const result = await verifyMigration(clinicId)
+      setVerification(result)
+      
+      if (result.passed) {
+        setStatus('Migration completed and verified successfully')
+      } else {
+        setStatus('Migration completed but verification failed - DO NOT enable sync')
+      }
     } catch (e: any) {
       setStatus('Error: ' + e.message)
     } finally {
@@ -128,6 +152,20 @@ export default function MigrationTool() {
       </div>
       
       {status && <p className="text-sm text-muted-foreground">{status}</p>}
+      
+      {verification && (
+        <div className="border border-border p-3 space-y-2 text-xs">
+          <p className="font-medium">{verification.summary}</p>
+          {verification.details.map((d: any) => (
+            <div key={d.table} className="flex justify-between">
+              <span>{d.table}</span>
+              <span className={d.match ? 'text-green-600' : 'text-red-600'}>
+                local:{d.localCount} cloud:{d.cloudCount} {d.match ? '✓' : '✗'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
